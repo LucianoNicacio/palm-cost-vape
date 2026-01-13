@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 interface Category {
     id: number;
@@ -16,6 +16,7 @@ interface Product {
     stock: number;
     track_inventory: boolean;
     is_active: boolean;
+    is_featured: boolean;
     in_stock: boolean;
     image_url: string | null;
     category: Category | null;
@@ -41,6 +42,7 @@ const props = defineProps<{
     stats: {
         total: number;
         active: number;
+        featured: number;
         low_stock: number;
         out_of_stock: number;
     };
@@ -82,7 +84,7 @@ const deleteProduct = (product: Product) => {
 <template>
     <AdminLayout title="Products">
         <!-- Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <div class="bg-white rounded-xl shadow p-4">
                 <p class="text-gray-500 text-sm">Total Products</p>
                 <p class="text-2xl font-bold text-gray-900">{{ stats.total }}</p>
@@ -90,6 +92,10 @@ const deleteProduct = (product: Product) => {
             <div class="bg-white rounded-xl shadow p-4">
                 <p class="text-gray-500 text-sm">Active</p>
                 <p class="text-2xl font-bold text-green-600">{{ stats.active }}</p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-4">
+                <p class="text-gray-500 text-sm">⭐ Featured</p>
+                <p class="text-2xl font-bold text-purple-600">{{ stats.featured }}</p>
             </div>
             <div class="bg-white rounded-xl shadow p-4">
                 <p class="text-gray-500 text-sm">Low Stock</p>
@@ -128,6 +134,7 @@ const deleteProduct = (product: Product) => {
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
+                <option value="featured">⭐ Featured</option>
                 <option value="low_stock">Low Stock</option>
                 <option value="out_of_stock">Out of Stock</option>
             </select>
@@ -143,58 +150,61 @@ const deleteProduct = (product: Product) => {
         <div class="bg-white rounded-xl shadow overflow-hidden">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                    </tr>
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    <tr v-for="product in products.data" :key="product.id" class="hover:bg-gray-50">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <img
-                                    v-if="product.image_url"
-                                    :src="product.image_url"
-                                    :alt="product.name"
-                                    class="w-10 h-10 rounded-lg object-cover"
-                                />
-                                <div v-else class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400">
-                                    📦
-                                </div>
-                                <div>
-                                    <p class="font-medium text-gray-900">{{ product.name }}</p>
-                                    <p v-if="product.brand" class="text-sm text-gray-500">{{ product.brand }}</p>
-                                </div>
+                <tr v-for="product in products.data" :key="product.id" class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img
+                                v-if="product.image_url"
+                                :src="product.image_url"
+                                :alt="product.name"
+                                class="w-10 h-10 rounded-lg object-cover"
+                            />
+                            <div v-else class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400">
+                                📦
                             </div>
-                        </td>
-                        <td class="px-6 py-4 text-gray-600 font-mono text-sm">
-                            {{ product.sku }}
-                        </td>
-                        <td class="px-6 py-4 text-gray-600">
-                            {{ product.category?.name || '-' }}
-                        </td>
-                        <td class="px-6 py-4 font-medium text-gray-900">
-                            {{ product.formatted_price }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <span v-if="!product.track_inventory" class="text-gray-500">-</span>
-                            <span
-                                v-else
-                                :class="[
+                            <div>
+                                <p class="font-medium text-gray-900">
+                                    <span v-if="product.is_featured" class="text-yellow-500 mr-1">⭐</span>
+                                    {{ product.name }}
+                                </p>
+                                <p v-if="product.brand" class="text-sm text-gray-500">{{ product.brand }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600 font-mono text-sm">
+                        {{ product.sku }}
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">
+                        {{ product.category?.name || '-' }}
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                        {{ product.formatted_price }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span v-if="!product.track_inventory" class="text-gray-500">-</span>
+                        <span
+                            v-else
+                            :class="[
                                     'font-medium',
                                     product.stock <= 0 ? 'text-red-600' :
                                     product.stock <= 5 ? 'text-yellow-600' : 'text-gray-900'
                                 ]"
-                            >
+                        >
                                 {{ product.stock }}
                             </span>
-                        </td>
-                        <td class="px-6 py-4">
+                    </td>
+                    <td class="px-6 py-4">
                             <span
                                 :class="[
                                     'px-2 py-1 text-xs rounded-full',
@@ -205,29 +215,29 @@ const deleteProduct = (product: Product) => {
                             >
                                 {{ product.is_active ? 'Active' : 'Inactive' }}
                             </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
-                                <a
-                                    :href="`/admin/products/${product.id}/edit`"
-                                    class="text-green-600 hover:text-green-800 font-medium"
-                                >
-                                    Edit
-                                </a>
-                                <button
-                                    @click="deleteProduct(product)"
-                                    class="text-red-600 hover:text-red-800 font-medium"
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr v-if="products.data.length === 0">
-                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                            No products found
-                        </td>
-                    </tr>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <a
+                                :href="`/admin/products/${product.id}/edit`"
+                                class="text-green-600 hover:text-green-800 font-medium"
+                            >
+                                Edit
+                            </a>
+                            <button
+                                @click="deleteProduct(product)"
+                                class="text-red-600 hover:text-red-800 font-medium"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr v-if="products.data.length === 0">
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                        No products found
+                    </td>
+                </tr>
                 </tbody>
             </table>
 

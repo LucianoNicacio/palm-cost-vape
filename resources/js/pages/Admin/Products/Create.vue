@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 interface Category {
     id: number;
@@ -23,6 +23,7 @@ const form = ref({
     track_inventory: true,
     is_taxable: true,
     is_active: true,
+    is_featured: false,
     age_restricted: true,
 });
 
@@ -231,6 +232,14 @@ const submit = () => {
                                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                             />
                             <span class="text-gray-700">Active (visible in store)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input
+                                v-model="form.is_featured"
+                                type="checkbox"
+                                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                            />
+                            <span class="text-gray-700">⭐ Featured (show on homepage)</span>
                         </label>
                         <label class="flex items-center gap-2">
                             <input

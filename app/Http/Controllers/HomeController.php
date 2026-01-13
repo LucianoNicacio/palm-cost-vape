@@ -13,8 +13,8 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'featuredProducts' => Product::active()
                 ->inStock()
+                ->where('is_featured', true)
                 ->with('category')
-                ->inRandomOrder()
                 ->take(8)
                 ->get(),
 

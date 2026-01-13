@@ -30,6 +30,7 @@ class ProductController extends Controller
             match ($request->status) {
                 'active' => $query->where('is_active', true),
                 'inactive' => $query->where('is_active', false),
+                'featured' => $query->where('is_featured', true),
                 'low_stock' => $query->where('track_inventory', true)->where('stock', '<=', 5)->where('stock', '>', 0),
                 'out_of_stock' => $query->where('track_inventory', true)->where('stock', '<=', 0),
                 default => null,
@@ -45,6 +46,7 @@ class ProductController extends Controller
             'stats' => [
                 'total' => Product::count(),
                 'active' => Product::where('is_active', true)->count(),
+                'featured' => Product::where('is_featured', true)->count(),
                 'low_stock' => Product::where('track_inventory', true)->where('stock', '<=', 5)->where('stock', '>', 0)->count(),
                 'out_of_stock' => Product::where('track_inventory', true)->where('stock', '<=', 0)->count(),
             ],
@@ -71,6 +73,7 @@ class ProductController extends Controller
             'track_inventory' => 'boolean',
             'is_taxable' => 'boolean',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
             'age_restricted' => 'boolean',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -84,6 +87,7 @@ class ProductController extends Controller
         $validated['track_inventory'] = $request->boolean('track_inventory', true);
         $validated['is_taxable'] = $request->boolean('is_taxable', true);
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_featured'] = $request->boolean('is_featured', false);
         $validated['age_restricted'] = $request->boolean('age_restricted', true);
 
         Product::create($validated);
@@ -113,6 +117,7 @@ class ProductController extends Controller
             'track_inventory' => 'boolean',
             'is_taxable' => 'boolean',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
             'age_restricted' => 'boolean',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -130,6 +135,7 @@ class ProductController extends Controller
         $validated['track_inventory'] = $request->boolean('track_inventory');
         $validated['is_taxable'] = $request->boolean('is_taxable');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_featured'] = $request->boolean('is_featured');
         $validated['age_restricted'] = $request->boolean('age_restricted');
 
         $product->update($validated);

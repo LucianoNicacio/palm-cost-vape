@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 interface Category {
     id: number;
@@ -20,6 +20,7 @@ interface Product {
     track_inventory: boolean;
     is_taxable: boolean;
     is_active: boolean;
+    is_featured: boolean;
     age_restricted: boolean;
     image_url: string | null;
 }
@@ -40,6 +41,7 @@ const form = ref({
     track_inventory: true,
     is_taxable: true,
     is_active: true,
+    is_featured: false,
     age_restricted: true,
 });
 
@@ -55,6 +57,7 @@ const initForm = () => {
         track_inventory: props.product.track_inventory,
         is_taxable: props.product.is_taxable,
         is_active: props.product.is_active,
+        is_featured: props.product.is_featured,
         age_restricted: props.product.age_restricted,
     };
 };
@@ -85,7 +88,7 @@ const submit = () => {
 
     const formData = new FormData();
     formData.append('_method', 'PUT');
-    
+
     Object.entries(form.value).forEach(([key, value]) => {
         if (typeof value === 'boolean') {
             formData.append(key, value ? '1' : '0');
@@ -291,6 +294,14 @@ const deleteProduct = () => {
                                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                             />
                             <span class="text-gray-700">Active (visible in store)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input
+                                v-model="form.is_featured"
+                                type="checkbox"
+                                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                            />
+                            <span class="text-gray-700">⭐ Featured (show on homepage)</span>
                         </label>
                         <label class="flex items-center gap-2">
                             <input
