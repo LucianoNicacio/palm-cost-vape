@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\AgeVerificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatalogController;
@@ -117,6 +118,9 @@ Route::middleware(['auth', 'admin'])
 
         Route::patch('/products/{product}/stock', [ProductController::class, 'updateStock'])
             ->name('products.stock');
+
+        // Categories
+        Route::resource('categories', CategoryController::class)->except(['show']);
 
         // Customers
         Route::get('/customers', [CustomerController::class, 'index'])
