@@ -40,7 +40,7 @@ class AgeVerificationController extends Controller
         );
 
         // Redirect to intended page or home
-        return redirect()->intended('home');
+        return redirect()->intended('/');
     }
 }
 

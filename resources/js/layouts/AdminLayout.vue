@@ -13,6 +13,7 @@ const flash = computed(() => (page.props as any).flash || {});
 const nav = [
     { name: 'Dashboard', href: '/admin', icon: '📊' },
     { name: 'Reservations', href: '/admin/reservations', icon: '📋' },
+    { name: 'Products', href: '/admin/products', icon: '📦' },
     { name: 'Customers', href: '/admin/customers', icon: '👥' },
     { name: 'Import Products', href: '/admin/products-import', icon: '📥' },
 ];

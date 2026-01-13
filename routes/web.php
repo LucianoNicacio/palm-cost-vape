@@ -8,6 +8,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductImportController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CustomerController;
 use Illuminate\Support\Facades\Route;
 
@@ -94,6 +95,28 @@ Route::middleware(['auth', 'admin'])
 
         Route::put('/reservations/{reservation}/status', [AdminReservationController::class, 'updateStatus'])
             ->name('reservations.status');
+
+        // Products CRUD
+        Route::get('/products', [ProductController::class, 'index'])
+            ->name('products.index');
+
+        Route::get('/products/create', [ProductController::class, 'create'])
+            ->name('products.create');
+
+        Route::post('/products', [ProductController::class, 'store'])
+            ->name('products.store');
+
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+            ->name('products.edit');
+
+        Route::put('/products/{product}', [ProductController::class, 'update'])
+            ->name('products.update');
+
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+            ->name('products.destroy');
+
+        Route::patch('/products/{product}/stock', [ProductController::class, 'updateStock'])
+            ->name('products.stock');
 
         // Customers
         Route::get('/customers', [CustomerController::class, 'index'])
