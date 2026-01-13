@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
-use function PHPUnit\Framework\stringStartsWith;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -15,6 +15,7 @@ class Product extends Model
     protected $fillable = [
         'external_id',
         'name',
+        'sku',
         'description',
         'price',
         'is_taxable',
@@ -24,7 +25,7 @@ class Product extends Model
         'is_active',
         'brand',
         'image',
-        'age_restriction',
+        'age_restricted',
     ];
 
     protected $casts = [
@@ -33,10 +34,11 @@ class Product extends Model
         'track_inventory' => 'boolean',
         'stock' => 'integer',
         'is_active' => 'boolean',
-        'age_restriction' => 'boolean',
+        'age_restricted' => 'boolean',
     ];
 
-    protected $hidden = [
+    // Add accessors to JSON output
+    protected $appends = [
         'image_url',
         'in_stock',
         'formatted_price',
@@ -53,7 +55,7 @@ class Product extends Model
             return null;
         }
 
-        return stringStartsWith($this->image, 'http')
+        return Str::startsWith($this->image, 'http')
             ? $this->image
             : Storage::url($this->image);
     }
@@ -98,12 +100,12 @@ class Product extends Model
 
     public function incrementStock(int $quantity = 1): void
     {
-        if($this->track_inventory){
+        if ($this->track_inventory) {
             $this->increment('stock', $quantity);
         }
     }
 
-    public function calculateItemPricing (int $quantity): array
+    public function calculateItemPricing(int $quantity): array
     {
         $subtotal = $this->price * $quantity;
         $taxRate = $this->is_taxable ? config('app.tax_rate', 0.06) : 0;

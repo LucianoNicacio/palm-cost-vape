@@ -24,22 +24,21 @@ class CatalogController extends Controller
 
         // Search filter
         if ($request->filled('search')) {
-            $query->search($request->search);
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
 
         // In-stock filter
         if ($request->boolean('in_stock')) {
-            $query->in_stock();
+            $query->inStock();
         }
 
         // Sorting
-        $sortField = $request->get('sort', 'name');
-        $allowedSorts = ['name', 'price', 'created_at'];
-
-        if (!in_array($sortField, $allowedSorts)) {
-            $direction = $sortField === 'created_at' ? 'desc' : 'asc';
-            $query->orderBy($sortField, $direction);
-        }
+        $sort = $request->get('sort', 'name');
+        match($sort) {
+            'price' => $query->orderBy('price', 'asc'),
+            'created_at' => $query->orderBy('created_at', 'desc'),
+            default => $query->orderBy('name', 'asc'),
+        };
 
         // Return paginated results
         return Inertia::render('Catalog/Index', [

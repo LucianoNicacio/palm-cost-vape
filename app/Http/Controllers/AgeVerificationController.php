@@ -17,7 +17,7 @@ class AgeVerificationController extends Controller
 
         // Show the age gate page
         return Inertia::render('AgeGate', [
-            'ageRequirement' => config('app.age_requirement', 21),
+            'ageRequirement' => (int) config('app.age_requirement', 21),
             'shopName' => config('app.name'),
         ]);
     }

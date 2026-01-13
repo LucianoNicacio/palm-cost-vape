@@ -6,7 +6,6 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImportController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\CustomerController;
@@ -76,9 +75,6 @@ Route::middleware(['auth', 'admin'])
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard');
 
-        // Products (Resource)
-        Route::resource('products', ProductController::class);
-
         // Product Import
         Route::get('/products-import', [ProductImportController::class, 'showForm'])
             ->name('products.import.form');
@@ -114,3 +110,5 @@ Route::middleware(['auth', 'admin'])
     });
 
 require __DIR__.'/settings.php';
+
+require __DIR__.'/auth.php';
