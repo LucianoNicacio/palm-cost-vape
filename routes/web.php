@@ -23,6 +23,11 @@ Route::get('/age-verification', [AgeVerificationController::class, 'show'])
 Route::post('/age-verification', [AgeVerificationController::class, 'verify'])
     ->name('age.verify');
 
+// Dashboard redirect for authenticated users
+Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))
+    ->middleware('auth')
+    ->name('dashboard');
+
 // ==========================================
 // AGE-VERIFIED ROUTES
 // ==========================================

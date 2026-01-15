@@ -22,13 +22,13 @@ Route::middleware('guest')->group(function () {
     Route::get('login', fn () => Inertia::render('auth/Login'))
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.store');;
 
     // Register
     Route::get('register', fn () => Inertia::render('auth/Register'))
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');;
 
     // Forgot Password
     Route::get('forgot-password', fn () => Inertia::render('auth/ForgotPassword'))
