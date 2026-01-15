@@ -71,7 +71,7 @@ php artisan serve
 
 Visit `http://localhost:8000`
 
-**Admin login:** admin@example.com / password
+**Admin login:** admin@palmcoastvape.com / password123
 
 ---
 
