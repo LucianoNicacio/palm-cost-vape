@@ -156,7 +156,7 @@ const updateStatus = () => {
                             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select
                                 v-model="selectedStatus"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900""
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-900"
                             >
                                 <option v-for="(label, value) in statuses" :key="value" :value="value">
                                     {{ label }}
