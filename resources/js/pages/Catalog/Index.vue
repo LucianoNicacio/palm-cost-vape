@@ -340,14 +340,14 @@ const hasFilters = computed(() => {
                     <div class="flex items-center justify-center gap-4 mb-6">
                         <button
                             @click="quantity = Math.max(1, quantity - 1)"
-                            class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xl font-bold"
+                            class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-900"
                         >
                             −
                         </button>
-                        <span class="text-2xl font-bold w-12 text-center">{{ quantity }}</span>
+                        <span class="text-2xl font-bold w-12 text-center text-gray-900">{{ quantity }}</span>
                         <button
                             @click="quantity = Math.min(selectedProduct.stock, quantity + 1)"
-                            class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xl font-bold"
+                            class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-900"
                         >
                             +
                         </button>

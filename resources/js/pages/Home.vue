@@ -74,8 +74,16 @@ const showModal = ref(false);
                         :href="`/shop?category=${category.slug}`"
                         class="bg-white rounded-xl shadow p-6 text-center hover:shadow-lg transition"
                     >
-                        <div class="text-4xl mb-3">📦</div>
-                        <h3 class="font-semibold">{{ category.name }}</h3>
+                        <div class="w-20 h-20 mx-auto mb-3 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                            <img
+                                v-if="category.image_url"
+                                :src="category.image_url"
+                                :alt="category.name"
+                                class="w-full h-full object-cover"
+                            />
+                            <span v-else class="text-4xl">📦</span>
+                        </div>
+                        <h3 class="font-semibold text-black">{{ category.name }}</h3>
                         <p class="text-sm text-gray-500">{{ category.products_count }} items</p>
                     </Link>
 

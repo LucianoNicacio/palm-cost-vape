@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class CategorySeeder extends Seeder
 {
@@ -11,62 +13,97 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
+                'code' => 'DISP',
                 'name' => 'Disposable Vapes',
                 'slug' => 'disposable-vapes',
-                'code' => 'DISP',
                 'description' => 'Single-use vape devices, pre-filled and ready to use',
+                'sort_order' => 0,
+                'placeholder' => 'https://picsum.photos/seed/vape1/400/400',
             ],
             [
+                'code' => 'ELIQ',
                 'name' => 'E-Liquids',
                 'slug' => 'e-liquids',
-                'code' => 'ELIQ',
-                'description' => 'Vape juices in various flavors and nicotine strengths',
+                'description' => 'Premium vape juices in various flavors and nicotine levels',
+                'sort_order' => 1,
+                'placeholder' => 'https://picsum.photos/seed/vape2/400/400',
             ],
             [
+                'code' => 'PODS',
                 'name' => 'Pod Systems',
                 'slug' => 'pod-systems',
-                'code' => 'PODS',
-                'description' => 'Compact, refillable pod-based vape devices',
+                'description' => 'Compact, refillable pod-based vaping devices',
+                'sort_order' => 2,
+                'placeholder' => 'https://picsum.photos/seed/vape3/400/400',
             ],
             [
+                'code' => 'MODS',
                 'name' => 'Mods & Kits',
                 'slug' => 'mods-kits',
-                'code' => 'MODS',
                 'description' => 'Advanced vaping devices and starter kits',
+                'sort_order' => 3,
+                'placeholder' => 'https://picsum.photos/seed/vape4/400/400',
             ],
             [
+                'code' => 'COIL',
                 'name' => 'Coils & Pods',
                 'slug' => 'coils-pods',
-                'code' => 'COIL',
                 'description' => 'Replacement coils and pod cartridges',
+                'sort_order' => 4,
+                'placeholder' => 'https://picsum.photos/seed/vape5/400/400',
             ],
             [
+                'code' => 'ACCS',
                 'name' => 'Accessories',
                 'slug' => 'accessories',
-                'code' => 'ACCS',
                 'description' => 'Batteries, chargers, cases, and more',
+                'sort_order' => 5,
+                'placeholder' => 'https://picsum.photos/seed/vape6/400/400',
             ],
             [
+                'code' => 'NIC',
                 'name' => 'Nicotine Pouches',
                 'slug' => 'nicotine-pouches',
-                'code' => 'NICO',
                 'description' => 'Tobacco-free nicotine pouches',
+                'sort_order' => 6,
+                'placeholder' => 'https://picsum.photos/seed/vape7/400/400',
             ],
             [
+                'code' => 'CBD',
                 'name' => 'CBD Products',
                 'slug' => 'cbd-products',
-                'code' => 'CBD',
                 'description' => 'CBD vapes, oils, and edibles',
+                'sort_order' => 7,
+                'placeholder' => 'https://picsum.photos/seed/vape8/400/400',
             ],
         ];
 
+        // Ensure directory exists
+        Storage::disk('public')->makeDirectory('categories');
+
         foreach ($categories as $category) {
+            $imagePath = null;
+
+            // Download placeholder image
+            if (isset($category['placeholder'])) {
+                try {
+                    $response = Http::get($category['placeholder']);
+                    if ($response->successful()) {
+                        $filename = "categories/{$category['slug']}.jpg";
+                        Storage::disk('public')->put($filename, $response->body());
+                        $imagePath = $filename;
+                    }
+                } catch (\Exception $e) {
+                    // Skip image if download fails
+                }
+            }
+
+            unset($category['placeholder']);
+
             Category::updateOrCreate(
-                ['slug' => $category['slug']],
-                $category
+                ['code' => $category['code']],
+                array_merge($category, ['image' => $imagePath])
             );
         }
-
-        $this->command->info('Created ' . count($categories) . ' categories.');
     }
 }
