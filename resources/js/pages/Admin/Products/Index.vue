@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
@@ -48,12 +49,18 @@ const props = defineProps<{
     };
 }>();
 
-const search = (e: Event) => {
-    const target = e.target as HTMLInputElement;
+// Local search value
+const searchQuery = ref(props.filters.search || '');
+
+const performSearch = () => {
     router.get('/admin/products', {
         ...props.filters,
-        search: target.value || undefined,
-    }, { preserveState: true });
+        search: searchQuery.value || undefined,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['products', 'stats'],
+    });
 };
 
 const filterByCategory = (categoryId: string) => {
@@ -109,13 +116,21 @@ const deleteProduct = (product: Product) => {
 
         <!-- Search and Filters -->
         <div class="mb-6 flex flex-col sm:flex-row gap-4">
-            <input
-                type="text"
-                placeholder="Search by name or SKU..."
-                :value="filters.search"
-                @input="search"
-                class="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
-            />
+            <div class="flex gap-2 flex-1">
+                <input
+                    type="text"
+                    placeholder="Search by name or SKU..."
+                    v-model="searchQuery"
+                    @keyup.enter="performSearch"
+                    class="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+                />
+                <button
+                    @click="performSearch"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                    Search
+                </button>
+            </div>
             <select
                 :value="filters.category || ''"
                 @change="filterByCategory(($event.target as HTMLSelectElement).value)"
