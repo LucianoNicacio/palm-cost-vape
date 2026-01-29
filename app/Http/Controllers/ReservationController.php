@@ -10,6 +10,7 @@ use App\Notifications\ReservationConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Inertia\Inertia;
 
 class ReservationController extends Controller
@@ -50,6 +51,20 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
+        // Honeypot check
+        if ($request->filled('website')) {
+            return back()->with('error', 'Something went wrong. Please try again.');
+        }
+
+        // Rate limit: max 3 orders per hour per IP
+        $key = 'checkout:' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            return back()->with('error', 'Too many orders. Please try again later.');
+        }
+
+        RateLimiter::hit($key, 3600); // 1 hour
+
         // Validate customer information
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',

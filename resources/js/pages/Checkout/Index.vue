@@ -50,6 +50,7 @@ const form = useForm({
     customer_phone: props.prefill?.customer_phone || '',
     customer_dob: '',
     is_subscribed: false,
+    website: '',
 });
 
 // Login form
@@ -115,6 +116,16 @@ const maxDate = computed(() => {
                         </div>
 
                         <form @submit.prevent="submitOrder" class="space-y-4">
+                            <!-- Honeypot - hidden from real users -->
+                            <input
+                                type="text"
+                                name="website"
+                                v-model="form.website"
+                                class="hidden"
+                                tabindex="-1"
+                                autocomplete="off"
+                            />
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Phone Number (for pickup notification)
