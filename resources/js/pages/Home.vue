@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
+import MainLayout from '@/layouts/MainLayout.vue';
 
 const props = defineProps<{
     featuredProducts?: Array<any>;
@@ -11,33 +11,13 @@ const props = defineProps<{
         city: string;
         phone: string;
     };
-    taxRate?: number;
 }>();
-
-const selectedProduct = ref(null);
-const showModal = ref(false);
 </script>
 
 <template>
     <Head title="Home" />
 
-    <div class="min-h-screen bg-gray-50">
-        <!-- Header -->
-        <header class="bg-white shadow-sm sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
-                <span class="text-xl font-bold text-gray-900">🌴 Palm Coast Vape</span>
-                <nav class="flex items-center gap-6">
-                    <Link href="/" class="text-green-600 font-medium">Home</Link>
-                    <Link href="/shop" class="text-gray-700 hover:text-green-600">Shop</Link>
-                    <Link href="/cart" class="relative p-2">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                    </Link>
-                </nav>
-            </div>
-        </header>
-
+    <MainLayout>
         <!-- Hero Section -->
         <section class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-24">
             <div class="max-w-7xl mx-auto px-4">
@@ -87,7 +67,6 @@ const showModal = ref(false);
                         <p class="text-sm text-gray-500">{{ category.products_count }} items</p>
                     </Link>
 
-                    <!-- Placeholder if no categories -->
                     <div v-if="!categories?.length" class="col-span-full text-center text-gray-500 py-8">
                         No categories yet. Import some products!
                     </div>
@@ -156,8 +135,11 @@ const showModal = ref(false);
                     <h3 class="text-xl font-semibold mb-4">📍 Visit Us</h3>
                     <p class="text-gray-300">{{ storeInfo?.address || '29 Old Kings Rd N, Suite 2-A' }}</p>
                     <p class="text-gray-300">{{ storeInfo?.city || 'Palm Coast, FL 32137' }}</p>
-                    <a :href="`tel:${(storeInfo?.phone || '(386) 597-2838').replace(/\D/g, '')}`"
-                       class="text-green-400 font-semibold mt-2 block">{{ storeInfo?.phone || '(386) 597-2838' }}</a>
+                    <p class="mt-2">
+                        <a href="tel:+13865972838" class="text-green-400 hover:text-green-300 font-semibold">
+                            {{ storeInfo?.phone || '(386) 597-2838' }}
+                        </a>
+                    </p>
                     <div class="mt-6 pt-6 border-t border-gray-700">
                         <p class="text-gray-300 text-sm">🕐 Mon-Sat: 10am-8pm</p>
                         <p class="text-gray-300 text-sm">🕐 Sun: 12pm-6pm</p>
@@ -165,13 +147,5 @@ const showModal = ref(false);
                 </div>
             </div>
         </section>
-
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-white py-8 border-t border-gray-800">
-            <div class="max-w-7xl mx-auto px-4 text-center text-gray-400 text-sm">
-                <p>Palm Coast Vape and Glassware | 29 Old Kings Rd N, Suite 2-A | (386) 597-2838</p>
-                <p class="mt-2">Must be 21+ to purchase. Please vape responsibly.</p>
-            </div>
-        </footer>
-    </div>
+    </MainLayout>
 </template>

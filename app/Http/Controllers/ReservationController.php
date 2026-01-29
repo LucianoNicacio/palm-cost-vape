@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use App\Models\ReservationItem;
 use App\Notifications\ReservationConfirmation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -22,14 +23,28 @@ class ReservationController extends Controller
                 ->with('error', 'Your cart is empty.');
         }
 
+        $user = Auth::user();
+
+        $prefill = null;
+        if ($user && $user->isCustomer() && $user->customer) {
+            $prefill = [
+                'customer_name' => $user->customer->name,
+                'customer_email' => $user->customer->email,
+                'customer_phone' => $user->customer->phone ?? '',
+            ];
+        }
+
         $cartItems = $this->getCartItemsWithProducts($cart);
         $totals = $this->calculateTotals($cartItems);
+        $taxRate = (float) config('store.tax_rate', 0.06);  // ADD THIS LINE
 
         return Inertia::render('Checkout/Index', [
             'cartItems' => $cartItems,
             'totals' => $totals,
-            'ageRequirement' => config('app.age_requirement', 21),
-            'taxRate' => config('app.tax_rate', 0.06),
+            'ageRequirement' => (int) config('store.age_requirement', 21),
+            'taxRate' => $taxRate,  // Now it's defined
+            'isLoggedIn' => $user && $user->isCustomer(),
+            'prefill' => $prefill,
         ]);
     }
 
@@ -40,7 +55,7 @@ class ReservationController extends Controller
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
-            'customer_dob' => 'required|date|before:-21 years',
+            'customer_dob' => 'required|date|before_or_equal:-21 years',
             'is_subscribed' => 'boolean',
         ], [
             'customer_dob.before' => 'You must be at least 21 years old.',
@@ -139,6 +154,8 @@ class ReservationController extends Controller
                 'address' => '29 Old Kings Rd N, Suite 2-A',
                 'city' => 'Palm Coast, FL 32137',
                 'phone' => '(386) 597-2838',
+                'showCreateAccount' => !Auth::check(),
+                'customerEmail' => $reservation->customer->email,
             ],
         ]);
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 
 class Customer extends Model
@@ -75,5 +76,39 @@ class Customer extends Model
     {
         return $query->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year);
+    }
+
+    /**
+     * Get the user account associated with this customer.
+     */
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class);
+    }
+
+    /**
+     * Check if customer has a user account.
+     */
+    public function hasAccount(): bool
+    {
+        return $this->user()->exists();
+    }
+
+    /**
+     * Get total amount spent by customer.
+     */
+    public function getTotalSpentAttribute(): float
+    {
+        return $this->reservations()
+            ->whereIn('status', ['completed', 'ready', 'confirmed'])
+            ->sum('total_price');
+    }
+
+    /**
+     * Get total number of orders.
+     */
+    public function getTotalOrdersAttribute(): int
+    {
+        return $this->reservations()->count();
     }
 }

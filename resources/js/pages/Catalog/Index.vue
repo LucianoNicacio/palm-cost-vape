@@ -23,7 +23,7 @@ const props = defineProps<{
 
 // Get cart from shared props
 const page = usePage();
-const cartCount = computed(() => page.props.cart?.item_count || 0);
+const cartCount = computed(() => page.props.cart_count || 0);
 
 // Modal state
 const showModal = ref(false);

@@ -12,6 +12,11 @@ use App\Http\Controllers\Admin\ReservationController as AdminReservationControll
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CustomerController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
+use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\OrderController;
+use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
+
 
 // ==========================================
 // PUBLIC ROUTES (No Age Verification)
@@ -140,6 +145,39 @@ Route::middleware(['auth', 'admin'])
         Route::get('/customers-export', [CustomerController::class, 'export'])
             ->name('customers.export');
     });
+
+/*
+|--------------------------------------------------------------------------
+| Customer Authentication Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('account')->group(function () {
+    // Guest routes (not logged in)
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
+        Route::post('/login', [CustomerAuthController::class, 'login']);
+        Route::get('/register', [CustomerAuthController::class, 'showRegister'])->name('customer.register');
+        Route::post('/register', [CustomerAuthController::class, 'register']);
+    });
+
+    // Protected customer routes
+    Route::middleware(['auth', 'customer'])->group(function () {
+        Route::get('/', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+
+        // Orders
+        Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders');
+        Route::get('/orders/{reservation}', [OrderController::class, 'show'])->name('customer.orders.show');
+        Route::post('/orders/{reservation}/reorder', [OrderController::class, 'reorder'])->name('customer.orders.reorder');
+
+        // Profile
+        Route::get('/profile', [CustomerProfileController::class, 'edit'])->name('customer.profile');
+        Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+        Route::put('/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.password.update');
+
+        // Logout
+        Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+    });
+});
 
 require __DIR__.'/settings.php';
 
