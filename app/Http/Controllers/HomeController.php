@@ -32,7 +32,7 @@ class HomeController extends Controller
                 'phone' => '(386) 597-2838',
             ],
 
-            'taxRate' => config('app.tax_rate', 0.06),
+            'heroImage' => asset('images/hero-bg.jpg'), // Add this line
         ]);
     }
 }

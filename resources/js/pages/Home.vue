@@ -11,6 +11,7 @@ const props = defineProps<{
         city: string;
         phone: string;
     };
+    heroImage?: string;
 }>();
 </script>
 
@@ -19,8 +20,15 @@ const props = defineProps<{
 
     <MainLayout>
         <!-- Hero Section -->
-        <section class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-24">
-            <div class="max-w-7xl mx-auto px-4">
+        <section
+            class="relative text-white py-24 bg-cover bg-center"
+            :class="heroImage ? '' : 'bg-gradient-to-r from-gray-900 to-gray-800'"
+            :style="heroImage ? { backgroundImage: `url(${heroImage})` } : {}"
+        >
+            <!-- Dark overlay for readability -->
+            <div v-if="heroImage" class="absolute inset-0 bg-black/50"></div>
+
+            <div class="relative max-w-7xl mx-auto px-4">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">
                     {{ storeInfo?.name || 'Palm Coast Vape and Glassware' }}
                 </h1>
