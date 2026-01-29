@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verify.age' => \App\Http\Middleware\VerifyAge::class,
             'customer' => \App\Http\Middleware\EnsureUserIsCustomer::class,
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
