@@ -77,7 +77,7 @@ const sortBy = ref(props.filters?.sort || 'name');
 // Debounce timer
 let searchTimeout: ReturnType<typeof setTimeout>;
 
-// Apply filters
+// Apply filters (resets to page 1 intentionally when filters change)
 const applyFilters = () => {
     const params: Record<string, any> = {};
 
@@ -281,7 +281,8 @@ const hasFilters = computed(() => {
                                     v-html="link.label"
                                     class="px-3 py-2 rounded-lg text-sm transition"
                                     :class="link.active ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                                    preserve-scroll
+                                    :preserve-state="true"
+                                    :preserve-scroll="true"
                                 />
                                 <span
                                     v-else
