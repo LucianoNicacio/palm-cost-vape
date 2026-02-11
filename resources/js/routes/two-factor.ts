@@ -1,0 +1,9 @@
+export const qrCode = () => ({ url: '/user/two-factor-qr-code' });
+export const recoveryCodes = () => ({ url: '/user/two-factor-recovery-codes' });
+export const secretKey = () => ({ url: '/user/two-factor-secret-key' });
+export const confirm = () => ({ url: '/user/confirmed-two-factor-authentication' });
+export const show = () => ({ url: '/settings/two-factor' });
+export const enable = () => ({ url: '/user/two-factor-authentication' });
+export const disable = () => ({ url: '/user/two-factor-authentication' });
+export const login = () => ({ url: '/two-factor-challenge' });
+export const regenerateRecoveryCodes = () => ({ url: '/user/two-factor-recovery-codes' });

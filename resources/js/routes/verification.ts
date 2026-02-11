@@ -1,0 +1,1 @@
+export const send = () => ({ url: '/email/verification-notification' });

@@ -6,7 +6,6 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/resources/js/routes
 /resources/js/wayfinder
 /vendor
 .DS_Store
