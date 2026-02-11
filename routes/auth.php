@@ -47,16 +47,16 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     // Email Verification
-    Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])
-        ->name('verification.notice');
-
-    Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-
-    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
+//    Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])
+//        ->name('verification.notice');
+//
+//    Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+//        ->middleware(['signed', 'throttle:6,1'])
+//        ->name('verification.verify');
+//
+//    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+//        ->middleware('throttle:6,1')
+//        ->name('verification.send');
 
     // Confirm Password
     Route::get('confirm-password', fn () => Inertia::render('auth/ConfirmPassword'))
