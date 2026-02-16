@@ -72,7 +72,6 @@ const props = defineProps<{
                             <span v-else class="text-4xl">📦</span>
                         </div>
                         <h3 class="font-semibold text-black">{{ category.name }}</h3>
-                        <p class="text-sm text-gray-500">{{ category.products_count }} items</p>
                     </Link>
 
                     <div v-if="!categories?.length" class="col-span-full text-center text-gray-500 py-8">

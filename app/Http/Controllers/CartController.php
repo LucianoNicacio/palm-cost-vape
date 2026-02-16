@@ -17,7 +17,7 @@ class CartController extends Controller
         return Inertia::render('Cart/Index', [
             'cartItems' => $cartItems,
             'totals' => $totals,
-            'taxRate' => config('app.tax_rate', 0.06),
+            'taxRate' => (float) config('store.tax_rate', 0.07),
         ]);
     }
 

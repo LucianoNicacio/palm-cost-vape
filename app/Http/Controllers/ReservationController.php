@@ -37,7 +37,7 @@ class ReservationController extends Controller
 
         $cartItems = $this->getCartItemsWithProducts($cart);
         $totals = $this->calculateTotals($cartItems);
-        $taxRate = (float) config('store.tax_rate', 0.06);  // ADD THIS LINE
+        $taxRate = (float) config('store.tax_rate', 0.07);
 
         return Inertia::render('Checkout/Index', [
             'cartItems' => $cartItems,
@@ -65,16 +65,29 @@ class ReservationController extends Controller
 
         RateLimiter::hit($key, 3600); // 1 hour
 
-        // Validate customer information
-        $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'required|string|max:20',
-            'customer_dob' => 'required|date|before_or_equal:-21 years',
-            'is_subscribed' => 'boolean',
-        ], [
-            'customer_dob.before' => 'You must be at least 21 years old.',
-        ]);
+        $user = Auth::user();
+        $isLoggedIn = $user && $user->isCustomer() && $user->customer;
+
+        // Validate customer information - logged-in users only need phone
+        if ($isLoggedIn) {
+            $validated = $request->validate([
+                'customer_phone' => 'required|string|max:20',
+                'is_subscribed' => 'boolean',
+            ]);
+            $validated['customer_name'] = $user->customer->name;
+            $validated['customer_email'] = $user->customer->email;
+            $validated['customer_dob'] = $user->customer->dob?->format('Y-m-d');
+        } else {
+            $validated = $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'customer_email' => 'required|email|max:255',
+                'customer_phone' => 'required|string|max:20',
+                'customer_dob' => 'required|date|before_or_equal:-21 years',
+                'is_subscribed' => 'boolean',
+            ], [
+                'customer_dob.before' => 'You must be at least 21 years old.',
+            ]);
+        }
 
         $cart = session('cart', []);
 
@@ -95,7 +108,8 @@ class ReservationController extends Controller
                 'dob' => $validated['customer_dob'],
             ]);
 
-            // Update subscription preference
+            // Update phone and subscription preference
+            $customer->phone = $validated['customer_phone'];
             $customer->is_subscribed = $request->boolean('is_subscribed');
             $customer->save();
 

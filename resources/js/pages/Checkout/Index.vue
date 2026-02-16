@@ -328,7 +328,7 @@ const maxDate = computed(() => {
                                         />
                                         <span class="ml-2 text-sm text-gray-600">Remember me</span>
                                     </label>
-                                    <Link href="/forgot-password" class="text-sm text-green-600 hover:underline">
+                                    <Link href="/manage/forgot-password" class="text-sm text-green-600 hover:underline">
                                         Forgot password?
                                     </Link>
                                 </div>

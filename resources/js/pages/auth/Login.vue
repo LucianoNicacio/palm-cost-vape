@@ -15,7 +15,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post('/login', {
+    form.post('/manage/login', {
         onFinish: () => form.reset('password'),
     });
 };
@@ -83,7 +83,7 @@ const submit = () => {
                             </label>
                             <a
                                 v-if="canResetPassword"
-                                href="/forgot-password"
+                                href="/manage/forgot-password"
                                 class="text-sm text-green-400 hover:text-green-300 transition"
                             >
                                 Forgot password?
@@ -135,7 +135,7 @@ const submit = () => {
                 <div v-if="canRegister" class="mt-6 text-center">
                     <p class="text-gray-400 text-sm">
                         Don't have an account?
-                        <a href="/register" class="text-green-400 hover:text-green-300 font-medium transition">
+                        <a href="/manage/register" class="text-green-400 hover:text-green-300 font-medium transition">
                             Sign up
                         </a>
                     </p>

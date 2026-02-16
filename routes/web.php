@@ -161,7 +161,7 @@ Route::prefix('account')->group(function () {
     });
 
     // Protected customer routes
-    Route::middleware(['auth', 'customer'])->group(function () {
+    Route::middleware('customer')->group(function () {
         Route::get('/', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
         // Orders

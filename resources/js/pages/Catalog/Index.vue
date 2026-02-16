@@ -72,7 +72,7 @@ const itemTotal = computed(() => {
 const search = ref(props.filters?.search || '');
 const selectedCategory = ref(props.filters?.category || '');
 const inStockOnly = ref(props.filters?.in_stock || false);
-const sortBy = ref(props.filters?.sort || 'name');
+const sortBy = ref(props.filters?.sort === 'price' || props.filters?.sort === 'created_at' ? props.filters.sort : '');
 
 // Debounce timer
 let searchTimeout: ReturnType<typeof setTimeout>;
@@ -84,7 +84,7 @@ const applyFilters = () => {
     if (selectedCategory.value) params.category = selectedCategory.value;
     if (search.value) params.search = search.value;
     if (inStockOnly.value) params.in_stock = '1';
-    if (sortBy.value !== 'name') params.sort = sortBy.value;
+    if (sortBy.value) params.sort = sortBy.value;
 
     router.get('/shop', params, {
         preserveState: true,
@@ -106,7 +106,7 @@ const clearFilters = () => {
     search.value = '';
     selectedCategory.value = '';
     inStockOnly.value = false;
-    sortBy.value = 'name';
+    sortBy.value = '';
     router.get('/shop');
 };
 
@@ -202,14 +202,23 @@ const hasFilters = computed(() => {
                         <!-- Sort By -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-                            <select
-                                v-model="sortBy"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 bg-white text-gray-900"
-                            >
-                                <option value="name">Name</option>
-                                <option value="price">Price</option>
-                                <option value="created_at">Newest</option>
-                            </select>
+                            <div class="space-y-1">
+                                <button
+                                    v-for="option in [
+                                        { value: '', label: 'Name (A-Z)' },
+                                        { value: 'price', label: 'Price (Low-High)' },
+                                        { value: 'created_at', label: 'Newest' },
+                                    ]"
+                                    :key="option.value"
+                                    @click="sortBy = option.value"
+                                    class="w-full text-left px-3 py-1.5 rounded-lg text-sm transition"
+                                    :class="sortBy === option.value
+                                        ? 'bg-green-50 text-green-700 font-medium'
+                                        : 'text-gray-600 hover:bg-gray-50'"
+                                >
+                                    {{ option.label }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </aside>

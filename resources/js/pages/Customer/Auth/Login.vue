@@ -99,7 +99,7 @@ const submit = () => {
 
                         <Link
                             v-if="canResetPassword"
-                            href="/forgot-password"
+                            href="/manage/forgot-password"
                             class="text-sm text-green-600 hover:text-green-500"
                         >
                             Forgot password?
@@ -140,7 +140,7 @@ const submit = () => {
             <!-- Admin Login Link -->
             <p class="mt-6 text-center text-xs text-gray-500">
                 Store administrator?
-                <Link href="/login" class="text-gray-600 hover:text-gray-800">
+                <Link href="/manage/login" class="text-gray-600 hover:text-gray-800">
                     Admin login
                 </Link>
             </p>

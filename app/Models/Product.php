@@ -111,7 +111,7 @@ class Product extends Model
     public function calculateItemPricing(int $quantity): array
     {
         $subtotal = $this->price * $quantity;
-        $taxRate = $this->is_taxable ? config('app.tax_rate', 0.06) : 0;
+        $taxRate = $this->is_taxable ? (float) config('store.tax_rate', 0.07) : 0;
         $taxAmount = round($subtotal * $taxRate, 2);
 
         return [

@@ -10,12 +10,17 @@ class EnsureUserIsCustomer
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !$request->user()->isCustomer()) {
-            if ($request->user()?->isAdmin()) {
+        if (!$request->user()) {
+            return redirect()->route('customer.login');
+        }
+
+        if (!$request->user()->isCustomer()) {
+            if ($request->user()->isAdmin()) {
                 return redirect()->route('admin.dashboard');
             }
             return redirect()->route('home');
         }
+
         return $next($request);
     }
 }

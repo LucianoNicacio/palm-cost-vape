@@ -50,7 +50,7 @@ class CatalogController extends Controller
 
             'filters' => $request->only(['category', 'search', 'in_stock', 'sort']),
 
-            'taxRate' => config('app.tax_rate', 0.06),
+            'taxRate' => (float) config('store.tax_rate', 0.07),
 
         ]);
     }

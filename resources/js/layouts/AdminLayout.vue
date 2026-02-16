@@ -26,7 +26,7 @@ const isActive = (href: string) => {
 };
 
 const logout = () => {
-    router.post('/logout');
+    router.post('/manage/logout');
 };
 </script>
 
