@@ -74,6 +74,19 @@ const selectedCategory = ref(props.filters?.category || '');
 const inStockOnly = ref(props.filters?.in_stock || false);
 const sortBy = ref(props.filters?.sort === 'price' || props.filters?.sort === 'created_at' ? props.filters.sort : '');
 
+// Sort dropdown
+const sortOpen = ref(false);
+const sortOptions = [
+    { value: '', label: 'Name (A-Z)' },
+    { value: 'price', label: 'Price (Low-High)' },
+    { value: 'created_at', label: 'Newest' },
+];
+const sortLabel = computed(() => sortOptions.find(o => o.value === sortBy.value)?.label || 'Name (A-Z)');
+const selectSort = (value: string) => {
+    sortBy.value = value;
+    sortOpen.value = false;
+};
+
 // Debounce timer
 let searchTimeout: ReturnType<typeof setTimeout>;
 
@@ -200,21 +213,29 @@ const hasFilters = computed(() => {
                         </div>
 
                         <!-- Sort By -->
-                        <div>
+                        <div class="relative">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-                            <div class="space-y-1">
+                            <button
+                                @click="sortOpen = !sortOpen"
+                                class="w-full flex items-center justify-between border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-sm focus:ring-2 focus:ring-green-500"
+                            >
+                                <span>{{ sortLabel }}</span>
+                                <svg class="w-4 h-4 text-gray-400" :class="{ 'rotate-180': sortOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div
+                                v-if="sortOpen"
+                                class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg py-1"
+                            >
                                 <button
-                                    v-for="option in [
-                                        { value: '', label: 'Name (A-Z)' },
-                                        { value: 'price', label: 'Price (Low-High)' },
-                                        { value: 'created_at', label: 'Newest' },
-                                    ]"
+                                    v-for="option in sortOptions"
                                     :key="option.value"
-                                    @click="sortBy = option.value"
-                                    class="w-full text-left px-3 py-1.5 rounded-lg text-sm transition"
+                                    @click="selectSort(option.value)"
+                                    class="w-full text-left px-3 py-2 text-sm transition"
                                     :class="sortBy === option.value
                                         ? 'bg-green-50 text-green-700 font-medium'
-                                        : 'text-gray-600 hover:bg-gray-50'"
+                                        : 'text-gray-700 hover:bg-gray-50'"
                                 >
                                     {{ option.label }}
                                 </button>
