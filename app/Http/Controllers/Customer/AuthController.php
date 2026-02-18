@@ -34,6 +34,10 @@ class AuthController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['nullable', 'string', 'max:20'],
+            'dob' => ['required', 'date', 'before_or_equal:-21 years'],
+        ], [
+            'dob.required' => 'Date of birth is required.',
+            'dob.before_or_equal' => 'You must be at least 21 years old to create an account.',
         ]);
 
         // Create user with customer role
@@ -50,11 +54,12 @@ class AuthController extends Controller
         if ($customer) {
             // Link existing customer (may have guest orders)
             $user->update(['customer_id' => $customer->id]);
-            
-            // Update customer name if it was from guest checkout
+
+            // Update customer info if it was from guest checkout
             $customer->update([
                 'name' => $validated['name'],
                 'phone' => $validated['phone'] ?? $customer->phone,
+                'dob' => $validated['dob'],
             ]);
         } else {
             // Create new customer
@@ -62,6 +67,7 @@ class AuthController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
+                'dob' => $validated['dob'],
                 'is_subscribed' => false,
             ]);
             

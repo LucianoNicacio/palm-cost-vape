@@ -7,7 +7,15 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     phone: '',
+    dob: '',
 });
+
+// Must be 21+ to register
+const maxDob = (() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 21);
+    return date.toISOString().split('T')[0];
+})();
 
 const submit = () => {
     form.post('/account/register', {
@@ -123,6 +131,24 @@ const formatPhone = (e: Event) => {
                     </div>
 
                     <div>
+                        <label for="dob" class="block text-sm font-medium text-gray-700">
+                            Date of Birth (Must be 21+)
+                        </label>
+                        <input
+                            id="dob"
+                            v-model="form.dob"
+                            type="date"
+                            required
+                            :max="maxDob"
+                            class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+                            :class="{ 'border-red-500': form.errors.dob }"
+                        />
+                        <p v-if="form.errors.dob" class="mt-1 text-sm text-red-500">
+                            {{ form.errors.dob }}
+                        </p>
+                    </div>
+
+                    <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">
                             Password
                         </label>
@@ -186,7 +212,7 @@ const formatPhone = (e: Event) => {
             </div>
 
             <p class="mt-6 text-center text-xs text-gray-500">
-                By creating an account, you confirm you are 21 years or older.
+                You must be 21 years or older to create an account.
             </p>
         </div>
     </div>
