@@ -285,7 +285,7 @@ const hasFilters = computed(() => {
                                 </div>
                             </div>
                             <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 truncate">{{ product.name }}</h3>
+                                <h3 class="font-semibold text-gray-900 line-clamp-2">{{ product.name }}</h3>
                                 <p class="text-lg font-bold text-green-600 mt-1">{{ product.formatted_price }}</p>
                             </div>
                         </div>
