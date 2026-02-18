@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class CategoryController extends Controller
 {
@@ -76,11 +78,11 @@ class CategoryController extends Controller
             'description' => 'nullable|string|max:1000',
             'sort_order' => 'required|integer|min:0',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ], [
             'code.unique' => 'This category code is already in use.',
             'code.alpha_num' => 'Code must contain only letters and numbers.',
-            'image.max' => 'Image must be less than 2MB.',
+            'image.max' => 'Image must be less than 5MB.',
         ]);
 
         // Generate slug from name
@@ -93,9 +95,16 @@ class CategoryController extends Controller
             $validated['slug'] = $originalSlug . '-' . $counter++;
         }
 
-        // Handle image upload
+        // Handle image upload — resize and convert to WebP
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('image'));
+            $image->scaleDown(1200, 800);
+            $encoded = $image->toWebp(80);
+
+            $filename = 'categories/' . uniqid() . '.webp';
+            Storage::disk('public')->put($filename, $encoded->toString());
+            $validated['image'] = $filename;
         }
 
         // Set is_active default
@@ -122,7 +131,7 @@ class CategoryController extends Controller
                 'sort_order' => $category->sort_order,
                 'is_active' => $category->is_active,
                 'image' => $category->image,
-                'image_url' => $category->image ? Storage::url($category->image) : null,
+                'image_url' => $category->image ? Storage::disk('public')->url($category->image) : null,
                 'products_count' => $category->products()->count(),
             ],
         ]);
@@ -145,14 +154,14 @@ class CategoryController extends Controller
             'description' => 'nullable|string|max:1000',
             'sort_order' => 'required|integer|min:0',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'remove_image' => 'boolean',
         ]);
 
         // Generate slug if name changed
         if ($category->name !== $validated['name']) {
             $validated['slug'] = Str::slug($validated['name']);
-            
+
             // Ensure slug is unique (excluding current category)
             $originalSlug = $validated['slug'];
             $counter = 1;
@@ -166,13 +175,21 @@ class CategoryController extends Controller
             Storage::disk('public')->delete($category->image);
             $validated['image'] = null;
         }
-        // Handle new image upload
+        // Handle new image upload — resize and convert to WebP
         elseif ($request->hasFile('image')) {
             // Delete old image
             if ($category->image) {
                 Storage::disk('public')->delete($category->image);
             }
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('image'));
+            $image->scaleDown(1200, 800);
+            $encoded = $image->toWebp(80);
+
+            $filename = 'categories/' . uniqid() . '.webp';
+            Storage::disk('public')->put($filename, $encoded->toString());
+            $validated['image'] = $filename;
         } else {
             // Keep existing image
             unset($validated['image']);

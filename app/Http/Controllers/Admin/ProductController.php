@@ -8,6 +8,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -75,12 +77,19 @@ class ProductController extends Controller
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'age_restricted' => 'boolean',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:5120',
         ]);
 
-        // Handle image upload
+        // Handle image upload — resize and convert to WebP
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('image'));
+            $image->scaleDown(800, 800);
+            $encoded = $image->toWebp(80);
+
+            $filename = 'products/' . uniqid() . '.webp';
+            Storage::disk('public')->put($filename, $encoded->toString());
+            $validated['image'] = $filename;
         }
 
         // Set defaults
@@ -119,16 +128,24 @@ class ProductController extends Controller
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'age_restricted' => 'boolean',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:5120',
         ]);
 
-        // Handle image upload
+        // Handle image upload — resize and convert to WebP
         if ($request->hasFile('image')) {
             // Delete old image
             if ($product->image && !str_starts_with($product->image, 'http')) {
                 Storage::disk('public')->delete($product->image);
             }
-            $validated['image'] = $request->file('image')->store('products', 'public');
+
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('image'));
+            $image->scaleDown(800, 800);
+            $encoded = $image->toWebp(80);
+
+            $filename = 'products/' . uniqid() . '.webp';
+            Storage::disk('public')->put($filename, $encoded->toString());
+            $validated['image'] = $filename;
         }
 
         // Set boolean defaults
