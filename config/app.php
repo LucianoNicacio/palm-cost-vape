@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/New_York',
 
     'age_requirement' => env('AGE_REQUIREMENT', 21),
     'tax_rate' => env('TAX_RATE', 0.06),
