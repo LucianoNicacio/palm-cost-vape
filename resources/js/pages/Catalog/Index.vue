@@ -362,10 +362,6 @@ const hasFilters = computed(() => {
                     <h3 class="text-xl font-bold text-gray-900 mb-1">{{ selectedProduct.name }}</h3>
                     <p class="text-gray-500 text-sm mb-2">{{ selectedProduct.category?.name }}</p>
                     <p class="text-2xl font-bold text-green-600 mb-4">{{ selectedProduct.formatted_price }}</p>
-                    
-                    <p class="text-sm text-gray-500 mb-4">
-                        {{ selectedProduct.stock }} in stock
-                    </p>
 
                     <!-- Quantity Selector -->
                     <div class="flex items-center justify-center gap-4 mb-6">
