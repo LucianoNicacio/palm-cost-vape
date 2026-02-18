@@ -61,7 +61,7 @@ class Product extends Model
         if ($this->image) {
             return Str::startsWith($this->image, 'http')
                 ? $this->image
-                : Storage::url($this->image);
+                : Storage::disk('public')->url($this->image);
         }
 
         // Fall back to category default image

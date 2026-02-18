@@ -68,7 +68,7 @@ class Category extends Model
     public function getImageUrlAttribute(): ?string
     {
         if ($this->image) {
-            return Storage::url($this->image);
+            return Storage::disk('public')->url($this->image);
         }
 
         $defaultPath = "images/categories/{$this->slug}.jpeg";
