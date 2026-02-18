@@ -52,15 +52,24 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    /**
+     * Get the full URL for the product image.
+     * Falls back to the category's default image if no product image is set.
+     */
     public function getImageUrlAttribute(): ?string
     {
-        if (!$this->image) {
-            return null;
+        if ($this->image) {
+            return Str::startsWith($this->image, 'http')
+                ? $this->image
+                : Storage::url($this->image);
         }
 
-        return Str::startsWith($this->image, 'http')
-            ? $this->image
-            : Storage::url($this->image);
+        // Fall back to category default image
+        if ($this->relationLoaded('category') && $this->category) {
+            return $this->category->image_url;
+        }
+
+        return null;
     }
 
     public function getInStockAttribute(): bool

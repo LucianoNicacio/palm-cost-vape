@@ -63,14 +63,20 @@ class Category extends Model
 
     /**
      * Get the full URL for the category image.
+     * Falls back to default image in public/images/categories/ based on slug.
      */
     public function getImageUrlAttribute(): ?string
     {
-        if (!$this->image) {
-            return null;
+        if ($this->image) {
+            return Storage::url($this->image);
         }
 
-        return Storage::url($this->image);
+        $defaultPath = "images/categories/{$this->slug}.jpeg";
+        if (file_exists(public_path($defaultPath))) {
+            return asset($defaultPath);
+        }
+
+        return null;
     }
 
     /**
