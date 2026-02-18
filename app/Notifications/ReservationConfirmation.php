@@ -27,13 +27,16 @@ class ReservationConfirmation extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject("Reservation Received - {$r->confirmation_number}")
-            ->greeting("Hi {$r->customer->name}!")
-            ->line("We've received your reservation and it's being reviewed.")
-            ->line("**Confirmation: {$r->confirmation_number}**")
-            ->line("**Total Due: \${$r->total_price}**")
-            ->line("We'll notify you when your order is ready for pickup.")
-            ->line("Pickup: Palm Coast Vape, 29 Old Kings Rd N, Suite 2-A, Palm Coast, FL")
-            ->line("Please bring valid ID when picking up your order.")
-            ->action('View Reservation', url("/confirmation/{$r->confirmation_number}"));
+            ->markdown('emails.reservations.confirmation', [
+                'reservation' => $r,
+                'items' => $r->items,
+                'customer' => $r->customer,
+                'storeName' => config('store.name'),
+                'storeAddress' => config('store.address'),
+                'storeCity' => config('store.city'),
+                'storePhone' => config('store.phone'),
+                'storeHours' => config('store.hours'),
+                'viewUrl' => url("/confirmation/{$r->confirmation_number}"),
+            ]);
     }
 }

@@ -22,6 +22,9 @@ class Reservation extends Model
         'notes',
         'processed_by',
         'processed_at',
+        'ready_at',
+        'cancelled_at',
+        'cancellation_reason',
     ];
 
     protected $casts = [
@@ -31,6 +34,8 @@ class Reservation extends Model
         'item_count' => 'integer',
         'pickup_date' => 'datetime',
         'processed_at' => 'datetime',
+        'ready_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -80,6 +85,32 @@ class Reservation extends Model
         $this->total_price = $this->items->sum('total_price');
         $this->item_count = $this->items->sum('quantity');
         $this->save();
+    }
+
+    /**
+     * Get the pickup deadline (24 hours after ready_at).
+     */
+    public function getPickupDeadlineAttribute(): ?Carbon
+    {
+        return $this->ready_at ? $this->ready_at->copy()->addHours(24) : null;
+    }
+
+    /**
+     * Check if this reservation has expired (ready for more than 24 hours).
+     */
+    public function isExpired(): bool
+    {
+        return $this->status === 'ready'
+            && $this->ready_at
+            && $this->ready_at->diffInHours(now()) >= 24;
+    }
+
+    /**
+     * Get the customer's email (supports both registered customers and guest email).
+     */
+    public function getNotificationEmail(): ?string
+    {
+        return $this->customer?->email;
     }
 
     public function getStatusLabelAttribute(): string
@@ -146,5 +177,15 @@ class Reservation extends Model
     public function scopeForDate($query, $date)
     {
         return $query->whereDate('created_at', $date);
+    }
+
+    /**
+     * Scope: reservations that are ready and past the 24-hour pickup window.
+     */
+    public function scopeExpiredPickup($query)
+    {
+        return $query->where('status', 'ready')
+            ->whereNotNull('ready_at')
+            ->where('ready_at', '<=', now()->subHours(24));
     }
 }

@@ -7,4 +7,5 @@ return [
     'address' => '29 Old Kings Rd N, Suite 2-A',
     'city' => 'Palm Coast, FL 32137',
     'phone' => '(386) 597-2838',
+    'hours' => 'Mon-Sat: 10AM-8PM | Sun: 11AM-6PM',
 ];

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReservationCancelled;
+use App\Mail\ReservationCompleted;
+use App\Mail\ReservationReady;
 use App\Models\Reservation;
-use App\Notifications\ReservationStatusUpdated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class ReservationController extends Controller
@@ -85,34 +88,75 @@ class ReservationController extends Controller
         ]);
 
         $oldStatus = $reservation->status;
+        $newStatus = $validated['status'];
 
-        // Update reservation
-        $reservation->update([
-            'status' => $validated['status'],
+        // Don't process if status hasn't changed
+        if ($oldStatus === $newStatus) {
+            return back()->with('info', 'Status unchanged.');
+        }
+
+        // Build update data
+        $updateData = [
+            'status' => $newStatus,
             'notes' => $validated['notes'] ?? $reservation->notes,
             'processed_by' => auth()->id(),
             'processed_at' => now(),
-        ]);
+        ];
+
+        // Set ready_at timestamp when marking as ready
+        if ($newStatus === 'ready') {
+            $updateData['ready_at'] = now();
+        }
+
+        // Set cancelled_at and reason when cancelling
+        if ($newStatus === 'cancelled') {
+            $updateData['cancelled_at'] = now();
+            $updateData['cancellation_reason'] = 'admin_cancelled';
+        }
+
+        // Update reservation
+        $reservation->update($updateData);
 
         // Restore stock if cancelled
-        if ($validated['status'] === 'cancelled' && $oldStatus !== 'cancelled') {
+        if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
             foreach ($reservation->items as $item) {
                 $item->product?->incrementStock($item->quantity);
             }
         }
 
         // Update customer stats if completed
-        if ($validated['status'] === 'completed') {
-            $reservation->customer->updateStats();
+        if ($newStatus === 'completed') {
+            $reservation->customer?->updateStats();
         }
 
-        // Notify customer if status changed
-        if ($oldStatus !== $validated['status']) {
-            $reservation->customer->notify(
-                new ReservationStatusUpdated($reservation)
-            );
-        }
+        // Send email notification based on new status
+        $this->sendStatusEmail($reservation, $newStatus);
 
         return back()->with('success', "Status updated to {$reservation->status_label}");
+    }
+
+    /**
+     * Send the appropriate email based on the new status.
+     */
+    private function sendStatusEmail(Reservation $reservation, string $status): void
+    {
+        $email = $reservation->getNotificationEmail();
+
+        if (!$email) {
+            return;
+        }
+
+        $reservation->load(['customer', 'items']);
+
+        $mailable = match ($status) {
+            'ready' => new ReservationReady($reservation),
+            'completed' => new ReservationCompleted($reservation),
+            'cancelled' => new ReservationCancelled($reservation),
+            default => null,
+        };
+
+        if ($mailable) {
+            Mail::to($email)->send($mailable);
+        }
     }
 }

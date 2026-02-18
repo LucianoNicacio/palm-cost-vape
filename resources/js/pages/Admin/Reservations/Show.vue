@@ -37,6 +37,9 @@ interface Reservation {
     notes: string | null;
     created_at: string;
     processed_at: string | null;
+    ready_at: string | null;
+    cancelled_at: string | null;
+    cancellation_reason: string | null;
 }
 
 interface CustomerHistory {
@@ -115,6 +118,35 @@ const updateStatus = () => {
                         <span :class="['px-4 py-2 rounded-lg border text-sm font-medium', getStatusColor(reservation.status)]">
                             {{ reservation.status_label }}
                         </span>
+                    </div>
+                </div>
+
+                <!-- Status Timeline -->
+                <div v-if="reservation.ready_at || reservation.cancelled_at" class="bg-white rounded-xl shadow p-6">
+                    <h3 class="font-semibold text-gray-900 mb-3">Status Timeline</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Created</span>
+                            <span class="font-medium text-gray-900">{{ formatDate(reservation.created_at) }}</span>
+                        </div>
+                        <div v-if="reservation.ready_at" class="flex justify-between">
+                            <span class="text-gray-500">Marked Ready</span>
+                            <span class="font-medium text-green-600">{{ formatDate(reservation.ready_at) }}</span>
+                        </div>
+                        <div v-if="reservation.ready_at && reservation.status === 'ready'" class="flex justify-between">
+                            <span class="text-gray-500">Pickup Deadline</span>
+                            <span class="font-medium text-orange-600">{{ formatDate(new Date(new Date(reservation.ready_at).getTime() + 24 * 60 * 60 * 1000).toISOString()) }}</span>
+                        </div>
+                        <div v-if="reservation.cancelled_at" class="flex justify-between">
+                            <span class="text-gray-500">Cancelled</span>
+                            <span class="font-medium text-red-600">{{ formatDate(reservation.cancelled_at) }}</span>
+                        </div>
+                        <div v-if="reservation.cancellation_reason" class="flex justify-between">
+                            <span class="text-gray-500">Reason</span>
+                            <span class="font-medium text-red-600">
+                                {{ reservation.cancellation_reason === 'auto_expired' ? 'Auto-expired (24hr pickup window)' : reservation.cancellation_reason === 'admin_cancelled' ? 'Cancelled by admin' : reservation.cancellation_reason }}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
