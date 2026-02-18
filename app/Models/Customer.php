@@ -100,7 +100,7 @@ class Customer extends Model
     public function getTotalSpentAttribute(): float
     {
         return $this->reservations()
-            ->whereIn('status', ['completed', 'ready', 'confirmed'])
+            ->whereIn('status', ['completed', 'ready'])
             ->sum('total_price');
     }
 

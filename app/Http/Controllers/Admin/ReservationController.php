@@ -49,7 +49,6 @@ class ReservationController extends Controller
             'statusCounts' => [
                 'all' => Reservation::count(),
                 'pending' => Reservation::status('pending')->count(),
-                'confirmed' => Reservation::status('confirmed')->count(),
                 'ready' => Reservation::status('ready')->count(),
                 'completed' => Reservation::status('completed')->count(),
                 'cancelled' => Reservation::status('cancelled')->count(),
@@ -71,7 +70,6 @@ class ReservationController extends Controller
                 ->get(),
             'statuses' => [
                 'pending' => 'Pending',
-                'confirmed' => 'Confirmed',
                 'ready' => 'Ready for Pickup',
                 'completed' => 'Completed',
                 'cancelled' => 'Cancelled',
@@ -82,7 +80,7 @@ class ReservationController extends Controller
     public function updateStatus(Request $request, Reservation $reservation)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,ready,completed,cancelled',
+            'status' => 'required|in:pending,ready,completed,cancelled',
             'notes' => 'nullable|string|max:1000',
         ]);
 

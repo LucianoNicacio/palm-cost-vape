@@ -22,7 +22,6 @@ const props = defineProps<{
     }>;
     statusCounts: {
         pending: number;
-        confirmed: number;
         ready: number;
         completed: number;
         cancelled: number;
@@ -47,7 +46,6 @@ const changePeriod = (newPeriod: string) => {
 const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
         pending: 'bg-yellow-100 text-yellow-700',
-        confirmed: 'bg-blue-100 text-blue-700',
         ready: 'bg-green-100 text-green-700',
         completed: 'bg-gray-100 text-gray-700',
         cancelled: 'bg-red-100 text-red-700',
@@ -153,15 +151,8 @@ const maxRevenue = Math.max(...props.dailyRevenue.map(d => d.revenue || 1), 1);
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-blue-400"></span>
-                            <span class="text-gray-700">Confirmed</span>
-                        </div>
-                        <span class="font-semibold text-gray-900">{{ statusCounts.confirmed }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-green-400"></span>
-                            <span class="text-gray-700">Ready</span>
+                            <span class="text-gray-700">Ready for Pickup</span>
                         </div>
                         <span class="font-semibold text-gray-900">{{ statusCounts.ready }}</span>
                     </div>

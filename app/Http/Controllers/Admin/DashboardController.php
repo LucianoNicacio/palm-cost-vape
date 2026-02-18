@@ -94,7 +94,6 @@ class DashboardController extends Controller
                 ->get(),
             'statusCounts' => [
                 'pending' => Reservation::status('pending')->count(),
-                'confirmed' => Reservation::status('confirmed')->count(),
                 'ready' => Reservation::status('ready')->count(),
                 'completed' => Reservation::status('completed')->count(),
                 'cancelled' => Reservation::status('cancelled')->count(),

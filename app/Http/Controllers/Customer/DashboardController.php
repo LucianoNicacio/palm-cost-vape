@@ -38,7 +38,7 @@ class DashboardController extends Controller
             'total_orders' => $customer?->total_orders ?? 0,
             'total_spent' => $customer?->total_spent ?? 0,
             'pending_orders' => $customer ? $customer->reservations()
-                ->whereIn('status', ['pending', 'confirmed', 'ready'])
+                ->whereIn('status', ['pending', 'ready'])
                 ->count() : 0,
         ];
 

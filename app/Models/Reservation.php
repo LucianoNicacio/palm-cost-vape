@@ -86,11 +86,9 @@ class Reservation extends Model
     {
         return match ($this->status) {
             'pending' => 'Pending',
-            'confirmed' => 'Confirmed',
             'ready' => 'Ready for Pickup',
             'completed' => 'Completed',
             'cancelled' => 'Cancelled',
-            'expired' => 'Expired',
             default => ucfirst($this->status),
         };
     }
@@ -99,7 +97,6 @@ class Reservation extends Model
     {
         return match ($this->status) {
             'pending' => 'yellow',
-            'confirmed' => 'blue',
             'ready' => 'green',
             'completed' => 'gray',
             'cancelled' => 'red',
