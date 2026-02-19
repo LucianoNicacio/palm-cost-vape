@@ -179,4 +179,23 @@ class ProductController extends Controller
 
         return back()->with('success', 'Stock updated.');
     }
+
+    public function duplicate(Product $product)
+    {
+        $newProduct = $product->replicate(['external_id']);
+        $newProduct->name = $product->name . ' (Copy)';
+        $newProduct->sku = $product->sku . '-COPY-' . strtoupper(uniqid());
+
+        // Copy the image file if it exists
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            $newFilename = 'products/' . uniqid() . '.webp';
+            Storage::disk('public')->copy($product->image, $newFilename);
+            $newProduct->image = $newFilename;
+        }
+
+        $newProduct->save();
+
+        return redirect()->route('admin.products.edit', $newProduct)
+            ->with('success', 'Product duplicated successfully.');
+    }
 }

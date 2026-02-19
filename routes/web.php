@@ -129,6 +129,9 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/products/{product}/stock', [ProductController::class, 'updateStock'])
             ->name('products.stock');
 
+        Route::post('/products/{product}/duplicate', [ProductController::class, 'duplicate'])
+            ->name('products.duplicate');
+
         // Categories
         Route::resource('categories', CategoryController::class)->except(['show']);
 

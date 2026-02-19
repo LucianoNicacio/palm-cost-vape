@@ -86,6 +86,10 @@ const deleteProduct = (product: Product) => {
         router.delete(`/admin/products/${product.id}`);
     }
 };
+
+const duplicateProduct = (product: Product) => {
+    router.post(`/admin/products/${product.id}/duplicate`);
+};
 </script>
 
 <template>
@@ -239,6 +243,12 @@ const deleteProduct = (product: Product) => {
                             >
                                 Edit
                             </a>
+                            <button
+                                @click="duplicateProduct(product)"
+                                class="text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                                Duplicate
+                            </button>
                             <button
                                 @click="deleteProduct(product)"
                                 class="text-red-600 hover:text-red-800 font-medium"
