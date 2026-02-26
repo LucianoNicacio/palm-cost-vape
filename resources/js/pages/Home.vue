@@ -51,6 +51,13 @@ const props = defineProps<{
             </p>
         </section>
 
+        <!-- Service Area Banner -->
+        <section class="bg-green-50 border-b border-green-100 py-3 text-center">
+            <p class="text-sm text-green-800">
+                📍 Proudly serving <strong>Flagler County, FL</strong> — Reserve online and pick up in store!
+            </p>
+        </section>
+
         <!-- Categories Section -->
         <section class="py-16 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4">

@@ -38,6 +38,10 @@ class HandleInertiaRequests extends Middleware
                 'warning' => fn () => $request->session()->get('warning'),
             ],
             'cart_count' => fn () => $this->getCartCount($request),
+            'geo' => [
+                'allowed_zips' => config('geo.allowed_zips', []),
+                'service_area' => config('geo.service_area', 'Flagler County, FL'),
+            ],
         ];
     }
 

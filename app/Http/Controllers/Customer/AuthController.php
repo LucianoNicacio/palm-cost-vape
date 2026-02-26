@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\User;
+use App\Rules\FlaglerCountyZip;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,9 +36,14 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['nullable', 'string', 'max:20'],
             'dob' => ['required', 'date', 'before_or_equal:-21 years'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'state' => ['nullable', 'string', 'max:2'],
+            'zip_code' => ['required', 'string', 'max:10', new FlaglerCountyZip],
         ], [
             'dob.required' => 'Date of birth is required.',
             'dob.before_or_equal' => 'You must be at least 21 years old to create an account.',
+            'zip_code.required' => 'Zip code is required to verify your service area.',
         ]);
 
         // Create user with customer role
@@ -51,26 +57,33 @@ class AuthController extends Controller
         // Find or create customer and link to user
         $customer = Customer::where('email', $validated['email'])->first();
 
+        $addressData = [
+            'address' => $validated['address'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'state' => $validated['state'] ?? null,
+            'zip_code' => $validated['zip_code'],
+        ];
+
         if ($customer) {
             // Link existing customer (may have guest orders)
             $user->update(['customer_id' => $customer->id]);
 
             // Update customer info if it was from guest checkout
-            $customer->update([
+            $customer->update(array_merge([
                 'name' => $validated['name'],
                 'phone' => $validated['phone'] ?? $customer->phone,
                 'dob' => $validated['dob'],
-            ]);
+            ], $addressData));
         } else {
             // Create new customer
-            $customer = Customer::create([
+            $customer = Customer::create(array_merge([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
                 'dob' => $validated['dob'],
                 'is_subscribed' => false,
-            ]);
-            
+            ], $addressData));
+
             $user->update(['customer_id' => $customer->id]);
         }
 

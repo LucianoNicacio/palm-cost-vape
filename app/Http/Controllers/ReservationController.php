@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
 use App\Notifications\ReservationConfirmation;
+use App\Rules\FlaglerCountyZip;
 use App\Services\RewardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,7 @@ class ReservationController extends Controller
                 'customer_name' => $user->customer->name,
                 'customer_email' => $user->customer->email,
                 'customer_phone' => $user->customer->phone ?? '',
+                'zip_code' => $user->customer->zip_code ?? '',
             ];
         }
 
@@ -75,12 +77,15 @@ class ReservationController extends Controller
         $user = Auth::user();
         $isLoggedIn = $user && $user->isCustomer() && $user->customer;
 
-        // Validate customer information - logged-in users only need phone
+        // Validate customer information - logged-in users only need phone + zip
         if ($isLoggedIn) {
             $validated = $request->validate([
                 'customer_phone' => 'required|string|max:20',
                 'is_subscribed' => 'boolean',
                 'apply_reward' => 'boolean',
+                'zip_code' => ['required', 'string', 'max:10', new FlaglerCountyZip],
+            ], [
+                'zip_code.required' => 'Zip code is required to verify your service area.',
             ]);
             $validated['customer_name'] = $user->customer->name;
             $validated['customer_email'] = $user->customer->email;
@@ -92,8 +97,10 @@ class ReservationController extends Controller
                 'customer_phone' => 'required|string|max:20',
                 'customer_dob' => 'required|date|before_or_equal:-21 years',
                 'is_subscribed' => 'boolean',
+                'zip_code' => ['required', 'string', 'max:10', new FlaglerCountyZip],
             ], [
                 'customer_dob.before' => 'You must be at least 21 years old.',
+                'zip_code.required' => 'Zip code is required to verify your service area.',
             ]);
         }
 
@@ -116,8 +123,9 @@ class ReservationController extends Controller
                 'dob' => $validated['customer_dob'],
             ]);
 
-            // Update phone and subscription preference
+            // Update phone, zip, and subscription preference
             $customer->phone = $validated['customer_phone'];
+            $customer->zip_code = $validated['zip_code'];
             $customer->is_subscribed = $request->boolean('is_subscribed');
             $customer->save();
 

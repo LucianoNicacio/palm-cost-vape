@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/vue3';
+import AddressAutocomplete from '@/components/AddressAutocomplete.vue';
 
 interface CartItem {
     product: {
@@ -33,11 +34,16 @@ interface Props {
         customer_name: string;
         customer_email: string;
         customer_phone: string;
+        zip_code: string;
     } | null;
     rewardsBalance: number;
 }
 
 const props = defineProps<Props>();
+
+const page = usePage();
+const allowedZips = computed(() => (page.props as any).geo?.allowed_zips || []);
+const serviceArea = computed(() => (page.props as any).geo?.service_area || 'Flagler County, FL');
 
 const fmt = (value: number) => '$' + parseFloat(String(value || 0)).toFixed(2);
 
@@ -63,6 +69,8 @@ const form = useForm({
     customer_dob: '',
     is_subscribed: false,
     apply_reward: false,
+    zip_code: props.prefill?.zip_code || '',
+    address: '',
     website: '',
 });
 
@@ -105,6 +113,18 @@ const maxDate = computed(() => {
     const date = new Date();
     date.setFullYear(date.getFullYear() - props.ageRequirement);
     return date.toISOString().split('T')[0];
+});
+
+const onAddressSelected = (components: { address: string; city: string; state: string; zip_code: string }) => {
+    form.address = components.address;
+    form.zip_code = components.zip_code;
+};
+
+// Client-side zip validation
+const zipIsInvalid = computed(() => {
+    if (!form.zip_code || form.zip_code.length < 5) return false;
+    const zip = form.zip_code.replace(/[^0-9]/g, '').substring(0, 5);
+    return allowedZips.value.length > 0 && !allowedZips.value.includes(zip);
 });
 </script>
 
@@ -154,6 +174,28 @@ const maxDate = computed(() => {
                                 />
                             </div>
 
+                            <!-- Zip Code -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Zip Code *
+                                </label>
+                                <input
+                                    v-model="form.zip_code"
+                                    type="text"
+                                    required
+                                    maxlength="10"
+                                    placeholder="32137"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+                                    :class="{ 'border-red-500': form.errors.zip_code || zipIsInvalid }"
+                                />
+                                <p v-if="form.errors.zip_code" class="mt-1 text-sm text-red-500">
+                                    {{ form.errors.zip_code }}
+                                </p>
+                                <p v-else-if="zipIsInvalid" class="mt-1 text-sm text-red-500">
+                                    We currently only serve {{ serviceArea }} residents.
+                                </p>
+                            </div>
+
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input
                                     v-model="form.is_subscribed"
@@ -165,7 +207,7 @@ const maxDate = computed(() => {
 
                             <button
                                 type="submit"
-                                :disabled="form.processing"
+                                :disabled="form.processing || zipIsInvalid"
                                 class="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
                             >
                                 {{ form.processing ? 'Processing...' : 'Complete Reservation' }}
@@ -258,6 +300,41 @@ const maxDate = computed(() => {
                                     </p>
                                 </div>
 
+                                <!-- Address with autocomplete -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Address <span class="text-gray-400">(for zip code verification)</span>
+                                    </label>
+                                    <AddressAutocomplete
+                                        v-model="form.address"
+                                        :allowed-zips="allowedZips"
+                                        placeholder="Start typing your address..."
+                                        @address-selected="onAddressSelected"
+                                    />
+                                </div>
+
+                                <!-- Zip Code -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Zip Code *
+                                    </label>
+                                    <input
+                                        v-model="form.zip_code"
+                                        type="text"
+                                        required
+                                        maxlength="10"
+                                        placeholder="32137"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
+                                        :class="{ 'border-red-500': form.errors.zip_code || zipIsInvalid }"
+                                    />
+                                    <p v-if="form.errors.zip_code" class="mt-1 text-sm text-red-500">
+                                        {{ form.errors.zip_code }}
+                                    </p>
+                                    <p v-else-if="zipIsInvalid" class="mt-1 text-sm text-red-500">
+                                        We currently only serve {{ serviceArea }} residents.
+                                    </p>
+                                </div>
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
                                         Date of Birth * (Must be {{ ageRequirement }}+)
@@ -286,7 +363,7 @@ const maxDate = computed(() => {
 
                                 <button
                                     type="submit"
-                                    :disabled="form.processing"
+                                    :disabled="form.processing || zipIsInvalid"
                                     class="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
                                 >
                                     {{ form.processing ? 'Processing...' : 'Complete Reservation' }}
@@ -369,9 +446,10 @@ const maxDate = computed(() => {
 
                     <!-- Info Box -->
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                        <h3 class="font-medium text-blue-800 mb-2">📍 In-Store Pickup Only</h3>
+                        <h3 class="font-medium text-blue-800 mb-2">📍 In-Store Pickup Only — {{ serviceArea }}</h3>
                         <p class="text-sm text-blue-700">
-                            This is a reservation for in-store pickup. You'll receive a confirmation email when your order is ready.
+                            This is a reservation for in-store pickup. We currently serve {{ serviceArea }} residents only.
+                            You'll receive a confirmation email when your order is ready.
                             Please bring valid ID for age verification when picking up.
                         </p>
                     </div>

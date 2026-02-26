@@ -43,5 +43,11 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+        @if(config('services.google_maps.api_key'))
+            <script async
+                src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async">
+            </script>
+        @endif
     </body>
 </html>
