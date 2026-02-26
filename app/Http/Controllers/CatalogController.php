@@ -27,8 +27,8 @@ class CatalogController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        // In-stock filter
-        if ($request->boolean('in_stock')) {
+        // In-stock filter (on by default)
+        if ($request->get('in_stock', '1') === '1') {
             $query->inStock();
         }
 
@@ -48,7 +48,10 @@ class CatalogController extends Controller
                 ->withCount(['products' => fn($q) => $q->active()])
                 ->get(),
 
-            'filters' => $request->only(['category', 'search', 'in_stock', 'sort']),
+            'filters' => array_merge(
+                $request->only(['category', 'search', 'sort']),
+                ['in_stock' => $request->get('in_stock', '1') === '1'],
+            ),
 
             'taxRate' => (float) config('store.tax_rate', 0.07),
 

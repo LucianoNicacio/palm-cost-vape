@@ -28,7 +28,10 @@ interface Product {
 const props = defineProps<{
     product: Product;
     categories: Category[];
+    backUrl?: string;
 }>();
+
+const productsUrl = props.backUrl || '/admin/products';
 
 const form = ref({
     name: '',
@@ -101,6 +104,8 @@ const submit = () => {
         formData.append('image', imageFile.value);
     }
 
+    formData.append('_back', productsUrl);
+
     router.post(`/admin/products/${props.product.id}`, formData, {
         forceFormData: true,
         onError: (err) => {
@@ -114,7 +119,9 @@ const submit = () => {
 
 const deleteProduct = () => {
     if (confirm(`Are you sure you want to delete "${props.product.name}"?`)) {
-        router.delete(`/admin/products/${props.product.id}`);
+        router.delete(`/admin/products/${props.product.id}`, {
+            data: { _back: productsUrl },
+        });
     }
 };
 </script>
@@ -122,7 +129,7 @@ const deleteProduct = () => {
 <template>
     <AdminLayout title="Edit Product">
         <div class="mb-4 flex justify-between items-center">
-            <a href="/admin/products" class="text-green-600 hover:text-green-800">
+            <a :href="productsUrl" class="text-green-600 hover:text-green-800">
                 ← Back to Products
             </a>
             <button
@@ -332,7 +339,7 @@ const deleteProduct = () => {
                         {{ saving ? 'Saving...' : 'Save Changes' }}
                     </button>
                     <a
-                        href="/admin/products"
+                        :href="productsUrl"
                         class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                     >
                         Cancel

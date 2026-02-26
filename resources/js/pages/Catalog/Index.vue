@@ -71,7 +71,7 @@ const itemTotal = computed(() => {
 // Filter state
 const search = ref(props.filters?.search || '');
 const selectedCategory = ref(props.filters?.category || '');
-const inStockOnly = ref(props.filters?.in_stock || false);
+const inStockOnly = ref(props.filters?.in_stock !== false);
 const sortBy = ref(props.filters?.sort === 'price' || props.filters?.sort === 'created_at' ? props.filters.sort : '');
 
 // Sort dropdown
@@ -96,7 +96,7 @@ const applyFilters = () => {
 
     if (selectedCategory.value) params.category = selectedCategory.value;
     if (search.value) params.search = search.value;
-    if (inStockOnly.value) params.in_stock = '1';
+    params.in_stock = inStockOnly.value ? '1' : '0';
     if (sortBy.value) params.sort = sortBy.value;
 
     router.get('/shop', params, {
@@ -118,7 +118,7 @@ watch(search, () => {
 const clearFilters = () => {
     search.value = '';
     selectedCategory.value = '';
-    inStockOnly.value = false;
+    inStockOnly.value = true;
     sortBy.value = '';
     router.get('/shop');
 };

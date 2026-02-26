@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
@@ -49,6 +49,16 @@ const props = defineProps<{
     };
 }>();
 
+// Build return URL preserving current filters
+const backUrl = computed(() => {
+    const params = new URLSearchParams();
+    if (props.filters.search) params.set('search', props.filters.search);
+    if (props.filters.category) params.set('category', props.filters.category);
+    if (props.filters.status) params.set('status', props.filters.status);
+    const qs = params.toString();
+    return `/admin/products${qs ? '?' + qs : ''}`;
+});
+
 // Local search value
 const searchQuery = ref(props.filters.search || '');
 
@@ -83,12 +93,16 @@ const goToPage = (url: string | null) => {
 
 const deleteProduct = (product: Product) => {
     if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-        router.delete(`/admin/products/${product.id}`);
+        router.delete(`/admin/products/${product.id}`, {
+            data: { _back: backUrl.value },
+        });
     }
 };
 
 const duplicateProduct = (product: Product) => {
-    router.post(`/admin/products/${product.id}/duplicate`);
+    router.post(`/admin/products/${product.id}/duplicate`, {
+        _back: backUrl.value,
+    });
 };
 </script>
 
@@ -238,7 +252,7 @@ const duplicateProduct = (product: Product) => {
                     <td class="px-6 py-4">
                         <div class="flex gap-2">
                             <a
-                                :href="`/admin/products/${product.id}/edit`"
+                                :href="`/admin/products/${product.id}/edit?_back=${encodeURIComponent(backUrl)}`"
                                 class="text-green-600 hover:text-green-800 font-medium"
                             >
                                 Edit

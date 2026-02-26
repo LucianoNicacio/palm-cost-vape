@@ -105,11 +105,12 @@ class ProductController extends Controller
             ->with('success', 'Product created successfully.');
     }
 
-    public function edit(Product $product)
+    public function edit(Request $request, Product $product)
     {
         return Inertia::render('Admin/Products/Edit', [
             'product' => $product,
             'categories' => Category::orderBy('name')->get(),
+            'backUrl' => $request->get('_back', route('admin.products.index')),
         ]);
     }
 
@@ -157,15 +158,19 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')
+        $backUrl = $request->input('_back', route('admin.products.index'));
+
+        return redirect()->to($backUrl)
             ->with('success', 'Product updated successfully.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
         $product->delete();
 
-        return redirect()->route('admin.products.index')
+        $backUrl = $request->input('_back', route('admin.products.index'));
+
+        return redirect()->to($backUrl)
             ->with('success', 'Product deleted successfully.');
     }
 
@@ -180,7 +185,7 @@ class ProductController extends Controller
         return back()->with('success', 'Stock updated.');
     }
 
-    public function duplicate(Product $product)
+    public function duplicate(Request $request, Product $product)
     {
         $newProduct = $product->replicate(['external_id']);
         $newProduct->name = $product->name . ' (Copy)';
@@ -195,7 +200,9 @@ class ProductController extends Controller
 
         $newProduct->save();
 
-        return redirect()->route('admin.products.edit', $newProduct)
+        $backUrl = $request->input('_back', route('admin.products.index'));
+
+        return redirect()->route('admin.products.edit', ['product' => $newProduct, '_back' => $backUrl])
             ->with('success', 'Product duplicated successfully.');
     }
 }
