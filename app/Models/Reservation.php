@@ -15,6 +15,7 @@ class Reservation extends Model
         'customer_id',
         'subtotal',
         'tax_amount',
+        'reward_discount',
         'total_price',
         'item_count',
         'status',
@@ -30,6 +31,7 @@ class Reservation extends Model
     protected $casts = [
         'subtotal' => 'decimal:2',
         'tax_amount' => 'decimal:2',
+        'reward_discount' => 'decimal:2',
         'total_price' => 'decimal:2',
         'item_count' => 'integer',
         'pickup_date' => 'datetime',
@@ -78,11 +80,21 @@ class Reservation extends Model
         return $this->belongsTo(User::class, 'processed_by');
     }
 
+    public function rewards()
+    {
+        return $this->hasMany(Reward::class);
+    }
+
+    public function rewardsEligibleAmount(): float
+    {
+        return floor((float) $this->subtotal / 100) * 10;
+    }
+
     public function recalculateTotals(): void
     {
         $this->subtotal = $this->items->sum('subtotal');
         $this->tax_amount = $this->items->sum('tax_amount');
-        $this->total_price = $this->items->sum('total_price');
+        $this->total_price = $this->items->sum('total_price') - (float) $this->reward_discount;
         $this->item_count = $this->items->sum('quantity');
         $this->save();
     }

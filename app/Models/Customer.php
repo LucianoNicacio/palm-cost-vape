@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 
@@ -35,6 +36,19 @@ class Customer extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function rewards(): HasMany
+    {
+        return $this->hasMany(Reward::class);
+    }
+
+    public function getRewardsBalanceAttribute(): float
+    {
+        $earned = $this->rewards()->earned()->sum('amount');
+        $redeemed = $this->rewards()->redeemed()->sum('amount');
+
+        return round($earned - $redeemed, 2);
     }
 
     public function routeNotificationForMail(): string

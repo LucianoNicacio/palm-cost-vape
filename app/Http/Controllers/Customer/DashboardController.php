@@ -40,6 +40,7 @@ class DashboardController extends Controller
             'pending_orders' => $customer ? $customer->reservations()
                 ->whereIn('status', ['pending', 'ready'])
                 ->count() : 0,
+            'rewards_balance' => $customer?->rewards_balance ?? 0,
         ];
 
         return Inertia::render('Customer/Dashboard', [

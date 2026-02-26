@@ -27,6 +27,9 @@ class HandleInertiaRequests extends Middleware
                     'role' => $request->user()->role,
                     'is_admin' => $request->user()->isAdmin(),
                     'is_customer' => $request->user()->isCustomer(),
+                    'rewards_balance' => $request->user()->isCustomer() && $request->user()->customer
+                        ? $request->user()->customer->rewards_balance
+                        : 0,
                 ] : null,
             ],
             'flash' => [

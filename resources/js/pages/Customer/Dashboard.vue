@@ -18,6 +18,7 @@ interface Props {
         total_orders: number;
         total_spent: number;
         pending_orders: number;
+        rewards_balance: number;
     };
     customer: {
         name: string;
@@ -66,7 +67,7 @@ const formatDate = (date: string) => {
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white rounded-xl shadow p-6">
                     <p class="text-gray-500 text-sm">Total Orders</p>
                     <p class="text-3xl font-bold text-gray-900">{{ stats.total_orders }}</p>
@@ -79,6 +80,11 @@ const formatDate = (date: string) => {
                     <p class="text-gray-500 text-sm">Pending Pickup</p>
                     <p class="text-3xl font-bold text-yellow-600">{{ stats.pending_orders }}</p>
                 </div>
+                <Link href="/account/rewards" class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
+                    <p class="text-gray-500 text-sm">Rewards Balance</p>
+                    <p class="text-3xl font-bold text-green-600">{{ fmt(stats.rewards_balance) }}</p>
+                    <p class="text-xs text-green-600 mt-1">View History →</p>
+                </Link>
             </div>
 
             <!-- Recent Orders -->

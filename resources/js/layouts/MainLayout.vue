@@ -56,6 +56,13 @@ const user = computed(() => page.props.auth?.user);
                     <!-- Auth Links -->
                     <template v-if="user">
                         <Link
+                            v-if="user.is_customer && user.rewards_balance > 0"
+                            href="/account/rewards"
+                            class="text-sm text-green-600 font-medium hover:text-green-700"
+                        >
+                            🎁 ${{ parseFloat(String(user.rewards_balance || 0)).toFixed(2) }}
+                        </Link>
+                        <Link
                             v-if="user.is_admin"
                             href="/admin"
                             class="text-sm text-gray-600 hover:text-green-600"

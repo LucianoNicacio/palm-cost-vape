@@ -7,6 +7,7 @@ use App\Mail\ReservationCancelled;
 use App\Mail\ReservationCompleted;
 use App\Mail\ReservationReady;
 use App\Models\Reservation;
+use App\Services\RewardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -124,9 +125,10 @@ class ReservationController extends Controller
             }
         }
 
-        // Update customer stats if completed
+        // Update customer stats and earn rewards if completed
         if ($newStatus === 'completed') {
             $reservation->customer?->updateStats();
+            app(RewardService::class)->earnRewards($reservation);
         }
 
         // Send email notification based on new status

@@ -16,6 +16,7 @@ use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
+use App\Http\Controllers\Customer\RewardController;
 
 
 // ==========================================
@@ -171,6 +172,9 @@ Route::prefix('account')->group(function () {
         Route::get('/orders', [OrderController::class, 'index'])->name('customer.orders');
         Route::get('/orders/{reservation}', [OrderController::class, 'show'])->name('customer.orders.show');
         Route::post('/orders/{reservation}/reorder', [OrderController::class, 'reorder'])->name('customer.orders.reorder');
+
+        // Rewards
+        Route::get('/rewards', [RewardController::class, 'index'])->name('customer.rewards');
 
         // Profile
         Route::get('/profile', [CustomerProfileController::class, 'edit'])->name('customer.profile');

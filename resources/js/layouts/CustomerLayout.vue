@@ -9,10 +9,13 @@ defineProps<{
 const page = usePage();
 const user = computed(() => (page.props as any).auth?.user);
 const flash = computed(() => (page.props as any).flash || {});
+const rewardsBalance = computed(() => user.value?.rewards_balance || 0);
+const fmt = (value: number) => '$' + parseFloat(String(value || 0)).toFixed(2);
 
 const nav = [
     { name: 'Dashboard', href: '/account', icon: '📊' },
     { name: 'My Orders', href: '/account/orders', icon: '📦' },
+    { name: 'Rewards', href: '/account/rewards', icon: '🎁' },
     { name: 'Profile', href: '/account/profile', icon: '👤' },
 ];
 
@@ -46,6 +49,13 @@ const logout = () => {
                     </nav>
                 </div>
                 <div class="flex items-center gap-4">
+                    <Link
+                        v-if="rewardsBalance > 0"
+                        href="/account/rewards"
+                        class="text-sm text-green-600 font-medium hover:text-green-700"
+                    >
+                        🎁 {{ fmt(rewardsBalance) }}
+                    </Link>
                     <span class="text-sm text-gray-600">{{ user?.name }}</span>
                     <button
                         @click="logout"

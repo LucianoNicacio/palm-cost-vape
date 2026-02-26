@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
 use App\Notifications\ReservationConfirmation;
+use App\Services\RewardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -39,13 +40,19 @@ class ReservationController extends Controller
         $totals = $this->calculateTotals($cartItems);
         $taxRate = (float) config('store.tax_rate', 0.07);
 
+        $rewardsBalance = 0;
+        if ($user && $user->isCustomer() && $user->customer) {
+            $rewardsBalance = $user->customer->rewards_balance;
+        }
+
         return Inertia::render('Checkout/Index', [
             'cartItems' => $cartItems,
             'totals' => $totals,
             'ageRequirement' => (int) config('store.age_requirement', 21),
-            'taxRate' => $taxRate,  // Now it's defined
+            'taxRate' => $taxRate,
             'isLoggedIn' => $user && $user->isCustomer(),
             'prefill' => $prefill,
+            'rewardsBalance' => $rewardsBalance,
         ]);
     }
 
@@ -73,6 +80,7 @@ class ReservationController extends Controller
             $validated = $request->validate([
                 'customer_phone' => 'required|string|max:20',
                 'is_subscribed' => 'boolean',
+                'apply_reward' => 'boolean',
             ]);
             $validated['customer_name'] = $user->customer->name;
             $validated['customer_email'] = $user->customer->email;
@@ -147,6 +155,11 @@ class ReservationController extends Controller
             // Recalculate totals
             $reservation->load('items');
             $reservation->recalculateTotals();
+
+            // Apply reward discount if requested
+            if ($isLoggedIn && $request->boolean('apply_reward')) {
+                app(RewardService::class)->redeemReward($customer, $reservation);
+            }
 
             // Update customer stats
             $customer->updateStats();

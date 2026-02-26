@@ -34,6 +34,7 @@ interface Props {
         customer_email: string;
         customer_phone: string;
     } | null;
+    rewardsBalance: number;
 }
 
 const props = defineProps<Props>();
@@ -43,6 +44,17 @@ const fmt = (value: number) => '$' + parseFloat(String(value || 0)).toFixed(2);
 // Checkout mode: 'guest' | 'login' | 'logged_in'
 const checkoutMode = ref<'guest' | 'login' | 'logged_in'>(props.isLoggedIn ? 'logged_in' : 'guest');
 
+// Reward toggle
+const applyReward = ref(false);
+const canApplyReward = computed(() => props.isLoggedIn && props.rewardsBalance >= 10);
+
+const displayTotal = computed(() => {
+    if (applyReward.value) {
+        return Math.max(0, props.totals.total_price - 10);
+    }
+    return props.totals.total_price;
+});
+
 // Guest checkout form
 const form = useForm({
     customer_name: props.prefill?.customer_name || '',
@@ -50,6 +62,7 @@ const form = useForm({
     customer_phone: props.prefill?.customer_phone || '',
     customer_dob: '',
     is_subscribed: false,
+    apply_reward: false,
     website: '',
 });
 
@@ -61,6 +74,7 @@ const loginForm = useForm({
 });
 
 const submitOrder = () => {
+    form.apply_reward = applyReward.value;
     form.post('/checkout');
 };
 
@@ -390,9 +404,41 @@ const maxDate = computed(() => {
                                 <span class="text-gray-600">Tax ({{ (taxRate * 100).toFixed(0) }}%)</span>
                                 <span>{{ fmt(totals.tax_amount) }}</span>
                             </div>
+
+                            <!-- Reward Discount -->
+                            <div v-if="applyReward" class="flex justify-between text-sm text-green-600">
+                                <span>Reward Discount</span>
+                                <span>-$10.00</span>
+                            </div>
+
                             <div class="flex justify-between font-bold text-lg pt-2 border-t">
                                 <span>Total</span>
-                                <span class="text-green-600">{{ fmt(totals.total_price) }}</span>
+                                <span class="text-green-600">{{ fmt(displayTotal) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Rewards Toggle -->
+                        <div v-if="isLoggedIn && rewardsBalance > 0" class="mt-4 border-t pt-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Rewards Balance</p>
+                                    <p class="text-xs text-gray-500">{{ fmt(rewardsBalance) }} available</p>
+                                </div>
+                                <button
+                                    v-if="canApplyReward"
+                                    @click="applyReward = !applyReward"
+                                    :class="[
+                                        'px-3 py-1.5 text-sm font-medium rounded-lg transition',
+                                        applyReward
+                                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    ]"
+                                >
+                                    {{ applyReward ? 'Remove' : 'Apply $10.00' }}
+                                </button>
+                                <span v-else class="text-xs text-gray-400">
+                                    Need $10.00 to redeem
+                                </span>
                             </div>
                         </div>
 
