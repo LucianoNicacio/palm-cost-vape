@@ -48,6 +48,10 @@ class HandleInertiaRequests extends Middleware
     protected function getCartCount(Request $request): int
     {
         $cart = $request->session()->get('cart', []);
-        return array_sum($cart);
+        $total = 0;
+        foreach ($cart as $value) {
+            $total += is_array($value) ? ($value['quantity'] ?? 0) : (int) $value;
+        }
+        return $total;
     }
 }

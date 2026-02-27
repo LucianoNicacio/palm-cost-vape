@@ -20,6 +20,7 @@ class OrderController extends Controller
 
         $orders = $customer ? $customer->reservations()
             ->with('items.product')
+            ->latest()
             ->paginate(10)
             ->through(fn ($reservation) => [
                 'id' => $reservation->id,
@@ -128,8 +129,8 @@ class OrderController extends Controller
             }
 
             // Check stock availability
-            $currentCartQty = $cart[$product->id]['quantity'] ?? 0;
-            $availableQty = $product->track_inventory 
+            $currentCartQty = $cart[$product->id] ?? 0;
+            $availableQty = $product->track_inventory
                 ? max(0, $product->stock - $currentCartQty)
                 : PHP_INT_MAX;
 
@@ -140,15 +141,8 @@ class OrderController extends Controller
 
             $qtyToAdd = min($item->quantity, $availableQty);
 
-            // Add to cart
-            if (isset($cart[$product->id])) {
-                $cart[$product->id]['quantity'] += $qtyToAdd;
-            } else {
-                $cart[$product->id] = [
-                    'product_id' => $product->id,
-                    'quantity' => $qtyToAdd,
-                ];
-            }
+            // Add to cart (store as plain integer to match CartController format)
+            $cart[$product->id] = $currentCartQty + $qtyToAdd;
 
             $addedItems++;
         }

@@ -40,7 +40,7 @@ const logout = () => {
                         🌴 Palm Coast Vape
                     </Link>
                     <nav class="hidden md:flex items-center gap-6">
-                        <Link href="/" class="text-gray-600 hover:text-green-600">
+                        <Link href="/shop" class="text-gray-600 hover:text-green-600">
                             Shop
                         </Link>
                         <Link href="/cart" class="text-gray-600 hover:text-green-600">

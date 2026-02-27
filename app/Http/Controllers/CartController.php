@@ -99,13 +99,14 @@ class CartController extends Controller
 
         // Build cart items array
         $items = [];
-        foreach ($cart as $productId => $quantity) {
-            if (isset($products[$productId])) {
+        foreach ($cart as $productId => $entry) {
+            $qty = is_array($entry) ? (int) ($entry['quantity'] ?? 0) : (int) $entry;
+            if ($qty > 0 && isset($products[$productId])) {
                 $product = $products[$productId];
                 $items[] = [
                     'product' => $product,
-                    'quantity' => $quantity,
-                    'pricing' => $product->calculateItemPricing($quantity),
+                    'quantity' => $qty,
+                    'pricing' => $product->calculateItemPricing($qty),
                 ];
             }
         }

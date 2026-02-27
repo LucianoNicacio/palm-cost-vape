@@ -133,7 +133,7 @@ const formatDate = (date: string) => {
             <!-- Quick Actions -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Link 
-                    href="/shop" 
+                    href="/shop"
                     class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition flex items-center gap-4"
                 >
                     <span class="text-4xl">🛒</span>

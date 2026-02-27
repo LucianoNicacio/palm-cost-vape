@@ -31,6 +31,9 @@ interface Reservation {
     customer: Customer;
     items: ReservationItem[];
     item_count: number;
+    subtotal: number;
+    tax_amount: number;
+    reward_discount: number;
     total_price: number;
     status: string;
     status_label: string;
@@ -173,9 +176,23 @@ const updateStatus = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 border-t bg-gray-50 flex justify-between">
-                        <span class="font-semibold text-gray-900">Total</span>
-                        <span class="font-bold text-xl text-gray-900">{{ fmt(reservation.total_price) }}</span>
+                    <div class="p-4 border-t bg-gray-50 space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Subtotal</span>
+                            <span class="text-gray-900">{{ fmt(reservation.subtotal) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Tax</span>
+                            <span class="text-gray-900">{{ fmt(reservation.tax_amount) }}</span>
+                        </div>
+                        <div v-if="Number(reservation.reward_discount) > 0" class="flex justify-between text-sm">
+                            <span class="text-green-600">Reward Discount</span>
+                            <span class="text-green-600">-{{ fmt(reservation.reward_discount) }}</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-gray-200">
+                            <span class="font-semibold text-gray-900">Total</span>
+                            <span class="font-bold text-xl text-gray-900">{{ fmt(reservation.total_price) }}</span>
+                        </div>
                     </div>
                 </div>
 
