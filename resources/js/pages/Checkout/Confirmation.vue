@@ -77,6 +77,9 @@ const createAccount = () => {
                 <p class="text-gray-600">
                     Thank you, {{ reservation.customer.name }}. We've received your reservation.
                 </p>
+                <p class="text-sm text-gray-500 mt-1">
+                    Thank you for supporting a local, American-owned business!
+                </p>
             </div>
 
             <!-- Confirmation Details -->

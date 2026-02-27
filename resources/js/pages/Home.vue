@@ -33,7 +33,7 @@ const props = defineProps<{
                     {{ storeInfo?.name || 'Palm Coast Vape and Glassware' }}
                 </h1>
                 <p class="text-xl text-gray-300 mb-8 max-w-2xl">
-                    Your local source for premium vapes, e-liquids, glassware, and accessories in Palm Coast, Florida.
+                    Your local, American-owned source for premium vapes, e-liquids, glassware, and accessories in Palm Coast, Florida.
                 </p>
                 <Link
                     href="/shop"
@@ -138,12 +138,20 @@ const props = defineProps<{
                 <div>
                     <h2 class="text-3xl font-bold mb-6">About Us</h2>
                     <p class="text-gray-300 mb-4">
-                        We are an e-cigarette and glassware retailer specializing in all things vape and glass.
+                        We are an American-owned e-cigarette and glassware retailer specializing in all things vape and glass.
                         Our knowledgeable staff is here to help you find the perfect products.
                     </p>
-                    <p class="text-gray-300">
-                        Located in the heart of Palm Coast, we've been serving our community with quality products and exceptional service.
+                    <p class="text-gray-300 mb-6">
+                        Located in the heart of Palm Coast, we're committed to our local Flagler County community, providing personalized service you won't find from big box retailers.
                     </p>
+                    <div class="space-y-2">
+                        <p class="text-sm font-semibold text-green-400 uppercase tracking-wide">Quality You Can Trust</p>
+                        <ul class="text-gray-300 text-sm space-y-1">
+                            <li>✓ Quality American-made products</li>
+                            <li>✓ FDA-compliant, lab-tested e-liquids</li>
+                            <li>✓ Knowledgeable local staff</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-semibold mb-4">📍 Visit Us</h3>

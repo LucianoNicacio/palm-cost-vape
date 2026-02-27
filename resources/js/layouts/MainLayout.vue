@@ -33,8 +33,8 @@ const user = computed(() => page.props.auth?.user);
             <div
                 class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16"
             >
-                <Link href="/" class="text-xl font-bold">
-                    Palm Coast Vape
+                <Link href="/" class="text-xl font-bold text-gray-900">
+                    🌴 Palm Coast Vape
                 </Link>
 
                 <nav class="hidden md:flex items-center gap-6">
@@ -132,6 +132,7 @@ const user = computed(() => page.props.auth?.user);
                     Palm Coast Vape and Glassware | 29 Old Kings Rd N, Suite 2-A |
                     <a href="tel:+13865972838" class="text-green-400 hover:text-green-300">(386) 597-2838</a>
                 </p>
+                <p class="mt-2 text-gray-500">American-Owned Small Business | Proudly serving Flagler County</p>
                 <p class="mt-2">Must be 21+ to purchase.</p>
             </div>
         </footer>
