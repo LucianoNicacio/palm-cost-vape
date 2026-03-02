@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
@@ -81,6 +82,30 @@ const search = (e: Event) => {
 
 const goToPage = (url: string | null) => {
     if (url) router.get(url, {}, { preserveState: true });
+};
+
+const savingStatus = ref<number | null>(null);
+
+const updateStatus = (reservation: Reservation, newStatus: string) => {
+    if (newStatus === reservation.status) return;
+    savingStatus.value = reservation.id;
+    router.put(`/admin/reservations/${reservation.id}/status`, {
+        status: newStatus,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => { savingStatus.value = null; },
+    });
+};
+
+const getSelectColor = (status: string) => {
+    const colors: Record<string, string> = {
+        pending: 'border-yellow-400 bg-yellow-50 text-yellow-700',
+        ready: 'border-green-400 bg-green-50 text-green-700',
+        completed: 'border-gray-400 bg-gray-50 text-gray-700',
+        cancelled: 'border-red-400 bg-red-50 text-red-700',
+    };
+    return colors[status] || 'border-gray-300 bg-white text-gray-700';
 };
 </script>
 
@@ -197,9 +222,20 @@ const goToPage = (url: string | null) => {
                             {{ fmt(reservation.total_price) }}
                         </td>
                         <td class="px-6 py-4">
-                            <span :class="['px-2 py-1 text-xs rounded-full', getStatusColor(reservation.status)]">
-                                {{ reservation.status_label }}
-                            </span>
+                            <div class="relative inline-block">
+                                <select
+                                    :value="reservation.status"
+                                    @change="updateStatus(reservation, ($event.target as HTMLSelectElement).value)"
+                                    :disabled="savingStatus === reservation.id"
+                                    :class="['text-xs font-medium rounded-full px-3 py-1 border cursor-pointer appearance-none pr-6 focus:ring-1 focus:ring-green-500 focus:outline-none', getSelectColor(reservation.status)]"
+                                >
+                                    <option value="pending">Pending</option>
+                                    <option value="ready">Ready</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                                <span v-if="savingStatus === reservation.id" class="ml-1 text-xs text-green-600">Saving...</span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-gray-600 text-sm">
                             {{ formatDate(reservation.created_at) }}
