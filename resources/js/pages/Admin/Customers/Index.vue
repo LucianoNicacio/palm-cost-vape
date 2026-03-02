@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
@@ -7,6 +8,7 @@ interface Customer {
     name: string;
     email: string;
     phone: string | null;
+    notes: string | null;
     total_orders: number;
     total_spent: number;
     last_order_at: string | null;
@@ -51,6 +53,25 @@ const search = (e: Event) => {
 const goToPage = (url: string | null) => {
     if (url) router.get(url, {}, { preserveState: true });
 };
+
+const savingNotes = ref<number | null>(null);
+const originalNotes = ref<Record<number, string | null>>({});
+
+const onNotesFocus = (customer: Customer) => {
+    originalNotes.value[customer.id] = customer.notes;
+};
+
+const saveNotes = (customer: Customer) => {
+    if (customer.notes === originalNotes.value[customer.id]) return;
+    savingNotes.value = customer.id;
+    router.put(`/admin/customers/${customer.id}`, {
+        notes: customer.notes || '',
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => { savingNotes.value = null; },
+    });
+};
 </script>
 
 <template>
@@ -90,6 +111,7 @@ const goToPage = (url: string | null) => {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Order</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                 </thead>
@@ -112,6 +134,20 @@ const goToPage = (url: string | null) => {
                             {{ formatDate(customer.last_order_at) }}
                         </td>
                         <td class="px-6 py-4">
+                            <div class="relative">
+                                <textarea
+                                    v-model="customer.notes"
+                                    @focus="onNotesFocus(customer)"
+                                    @blur="saveNotes(customer)"
+                                    rows="2"
+                                    maxlength="1000"
+                                    placeholder="Add notes..."
+                                    class="w-full min-w-[160px] text-sm border border-gray-200 rounded px-2 py-1 text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 resize-y"
+                                />
+                                <span v-if="savingNotes === customer.id" class="absolute top-1 right-2 text-xs text-green-600">Saving...</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
                             <a
                                 :href="`/admin/customers/${customer.id}`"
                                 class="text-green-600 hover:text-green-800 font-medium"
@@ -121,7 +157,7 @@ const goToPage = (url: string | null) => {
                         </td>
                     </tr>
                     <tr v-if="customers.data.length === 0">
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                             No customers found
                         </td>
                     </tr>
