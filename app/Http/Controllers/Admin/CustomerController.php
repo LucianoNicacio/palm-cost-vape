@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\Reward;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -43,11 +44,33 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         $customer->load([
-            'reservations' => fn($q) => $q->with('items')->latest()->take(20)
+            'reservations' => fn($q) => $q->with('items')->latest()->take(20),
         ]);
+
+        $rewards = $customer->rewards()
+            ->with('reservation:id,confirmation_number')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Calculate spending progress toward next reward
+        $totalSpent = (float) $customer->reservations()
+            ->where('status', 'completed')
+            ->sum('subtotal');
+        $totalEarned = (float) $customer->rewards()->earned()->sum('amount');
+        $creditedSpending = ($totalEarned / 10) * 100;
+        $progressSpent = fmod($totalSpent - $creditedSpending, 100);
+        if ($progressSpent < 0) {
+            $progressSpent = 0;
+        }
 
         return Inertia::render('Admin/Customers/Show', [
             'customer' => $customer,
+            'rewardsBalance' => $customer->rewards_balance,
+            'rewards' => $rewards,
+            'rewardsProgress' => [
+                'toward_next' => round($progressSpent, 2),
+                'remaining' => round(100 - $progressSpent, 2),
+            ],
         ]);
     }
 
@@ -61,6 +84,42 @@ class CustomerController extends Controller
         $customer->update($validated);
 
         return back()->with('success', 'Customer updated.');
+    }
+
+    public function addReward(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0.01|max:9999.99',
+            'description' => 'required|string|max:255',
+        ]);
+
+        $customer->rewards()->create([
+            'amount' => $validated['amount'],
+            'type' => 'earned',
+            'description' => $validated['description'],
+        ]);
+
+        return back()->with('success', 'Reward of $' . number_format($validated['amount'], 2) . ' added.');
+    }
+
+    public function removeReward(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0.01|max:9999.99',
+            'description' => 'required|string|max:255',
+        ]);
+
+        if ($customer->rewards_balance < $validated['amount']) {
+            return back()->withErrors(['amount' => 'Amount exceeds the customer\'s current balance of $' . number_format($customer->rewards_balance, 2) . '.']);
+        }
+
+        $customer->rewards()->create([
+            'amount' => $validated['amount'],
+            'type' => 'redeemed',
+            'description' => $validated['description'],
+        ]);
+
+        return back()->with('success', 'Reward of $' . number_format($validated['amount'], 2) . ' removed.');
     }
 
     public function export(Request $request)

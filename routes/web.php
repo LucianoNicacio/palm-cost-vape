@@ -154,6 +154,12 @@ Route::middleware(['auth', 'admin'])
         Route::put('/customers/{customer}', [CustomerController::class, 'update'])
             ->name('customers.update');
 
+        Route::post('/customers/{customer}/rewards/add', [CustomerController::class, 'addReward'])
+            ->name('customers.rewards.add');
+
+        Route::post('/customers/{customer}/rewards/remove', [CustomerController::class, 'removeReward'])
+            ->name('customers.rewards.remove');
+
         Route::get('/customers-export', [CustomerController::class, 'export'])
             ->name('customers.export');
     });
