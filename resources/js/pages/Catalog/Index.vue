@@ -260,12 +260,12 @@ const hasFilters = computed(() => {
                             @click="openModal(product)"
                             class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition cursor-pointer group"
                         >
-                            <div class="aspect-square bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center relative">
+                            <div class="aspect-square bg-gray-100 flex items-center justify-center relative">
                                 <img
                                     v-if="product.image_url"
                                     :src="product.image_url"
                                     :alt="product.name"
-                                    class="w-full h-full object-cover"
+                                    class="w-full h-full object-contain p-3"
                                 />
                                 <span v-else class="text-5xl">📦</span>
                                 <div class="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
@@ -348,12 +348,12 @@ const hasFilters = computed(() => {
 
                 <div v-if="selectedProduct" class="text-center">
                     <!-- Product Image -->
-                    <div class="w-32 h-32 mx-auto bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center mb-4">
+                    <div class="w-32 h-32 mx-auto bg-gray-100 rounded-xl flex items-center justify-center mb-4">
                         <img 
                             v-if="selectedProduct.image_url" 
                             :src="selectedProduct.image_url" 
                             :alt="selectedProduct.name"
-                            class="w-full h-full object-cover rounded-xl"
+                            class="w-full h-full object-contain p-2 rounded-xl"
                         />
                         <span v-else class="text-5xl">📦</span>
                     </div>

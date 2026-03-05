@@ -185,6 +185,32 @@ class ProductController extends Controller
         return back()->with('success', 'Stock updated.');
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        if (strlen($query) < 1) {
+            return response()->json([]);
+        }
+
+        $products = Product::active()
+            ->inStock()
+            ->search($query)
+            ->select('id', 'name', 'price', 'stock', 'track_inventory')
+            ->limit(10)
+            ->get()
+            ->map(fn ($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => (float) $product->price,
+                'formatted_price' => '$' . number_format($product->price, 2),
+                'stock' => $product->stock,
+                'track_inventory' => $product->track_inventory,
+            ]);
+
+        return response()->json($products);
+    }
+
     public function duplicate(Request $request, Product $product)
     {
         $newProduct = $product->replicate(['external_id']);

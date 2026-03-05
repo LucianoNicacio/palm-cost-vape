@@ -44,17 +44,25 @@ const props = defineProps<{
             </div>
         </section>
 
-        <!-- Info Banner -->
-        <section class="bg-blue-600 text-white py-4 text-center">
-            <p class="text-lg">
-                🛒 <strong>Reserve Online, Pay at Pickup</strong> — No payment required online!
-            </p>
+        <!-- Rewards Banner -->
+        <section class="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-center sm:text-left">
+                <p class="text-lg font-semibold">
+                    🎁 Earn <strong>$10 back</strong> for every $100 you reserve online!
+                </p>
+                <Link
+                    href="/shop"
+                    class="text-sm bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full font-medium transition"
+                >
+                    Start Earning →
+                </Link>
+            </div>
         </section>
 
         <!-- Service Area Banner -->
         <section class="bg-green-50 border-b border-green-100 py-3 text-center">
             <p class="text-sm text-green-800">
-                📍 Proudly serving <strong>Flagler County, FL</strong> — Reserve online and pick up in store!
+                📍 Proudly serving <strong>Flagler County, FL</strong> — Reserve online, pay at pickup. No payment required online!
             </p>
         </section>
 
@@ -104,12 +112,12 @@ const props = defineProps<{
                         :key="product.id"
                         class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition cursor-pointer"
                     >
-                        <div class="aspect-square bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center relative">
+                        <div class="aspect-square bg-gray-100 flex items-center justify-center relative">
                             <img
                                 v-if="product.image_url"
                                 :src="product.image_url"
                                 :alt="product.name"
-                                class="w-full h-full object-cover"
+                                class="w-full h-full object-contain p-3"
                             />
                             <span v-else class="text-5xl">📦</span>
                             <div v-if="!product.in_stock" class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -127,6 +135,47 @@ const props = defineProps<{
                     <p class="mb-4">No products available yet.</p>
                     <Link href="/shop" class="text-green-600 font-semibold hover:underline">
                         Browse Shop →
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works / Rewards Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center text-black mb-4">Reserve Online, Earn Rewards</h2>
+                <p class="text-center text-gray-500 mb-12 max-w-2xl mx-auto">
+                    Skip the wait and earn store credit every time you reserve through our website.
+                </p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">🛒</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 text-lg mb-2">1. Reserve Online</h3>
+                        <p class="text-gray-500 text-sm">Browse our catalog, add products to your cart, and place a reservation. No payment needed online.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">🏪</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 text-lg mb-2">2. Pick Up &amp; Pay In Store</h3>
+                        <p class="text-gray-500 text-sm">We'll have your order ready. Stop by, pay in person, and you're all set.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">🎁</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 text-lg mb-2">3. Earn $10 for Every $100</h3>
+                        <p class="text-gray-500 text-sm">Rewards are added to your account automatically. Redeem them on your next online reservation.</p>
+                    </div>
+                </div>
+                <div class="text-center mt-10">
+                    <Link
+                        href="/shop"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg inline-block transition"
+                    >
+                        Browse &amp; Reserve →
                     </Link>
                 </div>
             </div>

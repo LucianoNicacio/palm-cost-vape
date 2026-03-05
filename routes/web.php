@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ProductImportController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\InStoreSaleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
@@ -132,6 +133,13 @@ Route::middleware(['auth', 'admin'])
 
         Route::post('/products/{product}/duplicate', [ProductController::class, 'duplicate'])
             ->name('products.duplicate');
+
+        Route::get('/products/search', [ProductController::class, 'search'])
+            ->name('products.search');
+
+        // In-Store Sales
+        Route::resource('in-store-sales', InStoreSaleController::class)
+            ->only(['index', 'create', 'store', 'show']);
 
         // Categories
         Route::resource('categories', CategoryController::class)->except(['show']);

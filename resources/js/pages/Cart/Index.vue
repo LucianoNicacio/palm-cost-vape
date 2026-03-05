@@ -121,12 +121,12 @@ const clearCart = () => {
                     :class="{ 'opacity-50': updating === item.product.id }"
                 >
                     <!-- Product Image -->
-                    <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <img 
-                            v-if="item.product.image_url" 
-                            :src="item.product.image_url" 
+                    <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <img
+                            v-if="item.product.image_url"
+                            :src="item.product.image_url"
                             :alt="item.product.name"
-                            class="w-full h-full object-cover rounded-lg"
+                            class="w-full h-full object-contain p-1.5 rounded-lg"
                         />
                         <span v-else class="text-3xl">📦</span>
                     </div>

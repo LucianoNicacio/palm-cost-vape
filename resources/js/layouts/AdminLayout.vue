@@ -16,6 +16,7 @@ const nav = [
     { name: 'Products', href: '/admin/products', icon: '📦' },
     { name: 'Categories', href: '/admin/categories', icon: '📂' },
     { name: 'Customers', href: '/admin/customers', icon: '👥' },
+    { name: 'In-Store Sales', href: '/admin/in-store-sales', icon: '🧾' },
     { name: 'Import Products', href: '/admin/products-import', icon: '📥' },
 ];
 
