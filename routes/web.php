@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ReservationController as AdminReservationControll
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\InStoreSaleController;
+use App\Http\Controllers\Admin\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
@@ -140,6 +141,16 @@ Route::middleware(['auth', 'admin'])
         // In-Store Sales
         Route::resource('in-store-sales', InStoreSaleController::class)
             ->only(['index', 'create', 'store', 'show']);
+
+        // Reports
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->name('reports.index');
+
+        Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])
+            ->name('reports.export.excel');
+
+        Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])
+            ->name('reports.export.pdf');
 
         // Categories
         Route::resource('categories', CategoryController::class)->except(['show']);
